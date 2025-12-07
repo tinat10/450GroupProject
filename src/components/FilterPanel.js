@@ -40,20 +40,20 @@ const FilterPanel = ({ filters, onFilterChange, data }) => {
       <h3>Filters</h3>
       <div className="filter-controls">
         <div className="filter-group">
-          <label htmlFor="schoolType">School Type:</label>
+          <label htmlFor="schoolType">School Type</label>
           <select
             id="schoolType"
             value={filters.schoolType || 'All'}
             onChange={handleSchoolTypeChange}
           >
-            <option value="All">All</option>
+            <option value="All">All Schools</option>
             <option value="Public">Public</option>
             <option value="Private">Private</option>
           </select>
         </div>
 
         <div className="filter-group">
-          <label>Gender:</label>
+          <label>Gender</label>
           <div className="radio-group">
             <label>
               <input
@@ -63,7 +63,7 @@ const FilterPanel = ({ filters, onFilterChange, data }) => {
                 checked={filters.gender === 'All' || !filters.gender}
                 onChange={handleGenderChange}
               />
-              All
+              <span>All</span>
             </label>
             <label>
               <input
@@ -73,7 +73,7 @@ const FilterPanel = ({ filters, onFilterChange, data }) => {
                 checked={filters.gender === 'Male'}
                 onChange={handleGenderChange}
               />
-              Male
+              <span>Male</span>
             </label>
             <label>
               <input
@@ -83,7 +83,7 @@ const FilterPanel = ({ filters, onFilterChange, data }) => {
                 checked={filters.gender === 'Female'}
                 onChange={handleGenderChange}
               />
-              Female
+              <span>Female</span>
             </label>
           </div>
         </div>
@@ -100,7 +100,7 @@ const FilterPanel = ({ filters, onFilterChange, data }) => {
         </div>
 
         <div className="filter-group">
-          <label>Score Range:</label>
+          <label>Score Range</label>
           <div className="range-inputs">
             <input
               id="scoreMin"
