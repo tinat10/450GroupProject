@@ -136,27 +136,79 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     if (groupedLegendRef.current) {
       d3.select(groupedLegendRef.current).selectAll('*').remove();
       const uniqueCategories = [...new Set(groupedData.map(d => d.category))];
+      const padding = 20;
+      const itemHeight = 28;
+      const itemSpacing = 8;
+      const legendWidth = 300;
+      const legendHeight = uniqueCategories.length * (itemHeight + itemSpacing) + padding * 2 + 30;
+      
       const legendSvg = d3.select(groupedLegendRef.current)
         .append('svg')
-        .attr('width', 180)
-        .attr('height', uniqueCategories.length * 25 + 10);
+        .attr('width', legendWidth)
+        .attr('height', legendHeight);
+
+      // Background rectangle with rounded corners
+      const bg = legendSvg.append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', legendWidth)
+        .attr('height', legendHeight)
+        .attr('rx', 8)
+        .attr('ry', 8)
+        .attr('fill', '#f8f9fa')
+        .attr('stroke', '#e2e8f0')
+        .attr('stroke-width', 2);
+
+      // Title
+      legendSvg.append('text')
+        .attr('x', legendWidth / 2)
+        .attr('y', 25)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '14px')
+        .attr('font-weight', '600')
+        .attr('fill', '#2d3748')
+        .text('Categories');
 
       const legend = legendSvg.append('g')
-        .attr('transform', 'translate(10, 5)');
+        .attr('transform', `translate(${padding}, ${padding + 30})`);
 
       uniqueCategories.forEach((cat, i) => {
+        const yPos = i * (itemHeight + itemSpacing);
         const legendItem = legend.append('g')
-          .attr('transform', `translate(0, ${i * 20})`);
+          .attr('transform', `translate(0, ${yPos})`);
 
+        // Item background
         legendItem.append('rect')
-          .attr('width', 15)
-          .attr('height', 15)
-          .attr('fill', categoryColorScale(cat));
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', legendWidth - padding * 2)
+          .attr('height', itemHeight)
+          .attr('rx', 4)
+          .attr('ry', 4)
+          .attr('fill', 'white')
+          .attr('stroke', '#e2e8f0')
+          .attr('stroke-width', 1);
 
+        // Color square
+        legendItem.append('rect')
+          .attr('x', 12)
+          .attr('y', 6.5)
+          .attr('width', 18)
+          .attr('height', 18)
+          .attr('rx', 3)
+          .attr('ry', 3)
+          .attr('fill', categoryColorScale(cat))
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 2);
+
+        // Category text
         legendItem.append('text')
-          .attr('x', 20)
-          .attr('dy', '0.8em')
-          .attr('font-size', '12px')
+          .attr('x', 40)
+          .attr('y', 20)
+          .attr('dy', '0.35em')
+          .attr('font-size', '13px')
+          .attr('font-weight', '500')
+          .attr('fill', '#2d3748')
           .text(cat);
       });
     }
@@ -244,28 +296,91 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     // Create legend outside SVG for stacked view
     if (stackedLegendRef.current) {
       d3.select(stackedLegendRef.current).selectAll('*').remove();
+      const padding = 20;
+      const itemHeight = 32;
+      const itemSpacing = 10;
+      const legendWidth = 320;
+      const legendHeight = 3 * (itemHeight + itemSpacing) + padding * 2 + 30;
+      
       const legendSvg = d3.select(stackedLegendRef.current)
         .append('svg')
-        .attr('width', 250)
-        .attr('height', 80);
+        .attr('width', legendWidth)
+        .attr('height', legendHeight);
+
+      // Background rectangle with rounded corners
+      const bg = legendSvg.append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', legendWidth)
+        .attr('height', legendHeight)
+        .attr('rx', 8)
+        .attr('ry', 8)
+        .attr('fill', '#f8f9fa')
+        .attr('stroke', '#e2e8f0')
+        .attr('stroke-width', 2);
+
+      // Title
+      legendSvg.append('text')
+        .attr('x', legendWidth / 2)
+        .attr('y', 25)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '14px')
+        .attr('font-weight', '600')
+        .attr('fill', '#2d3748')
+        .text('Performance Levels');
 
       const legend = legendSvg.append('g')
-        .attr('transform', 'translate(10, 5)');
+        .attr('transform', `translate(${padding}, ${padding + 30})`);
 
       ['high', 'medium', 'low'].forEach((level, i) => {
+        const yPos = i * (itemHeight + itemSpacing);
         const legendItem = legend.append('g')
-          .attr('transform', `translate(0, ${i * 20})`);
+          .attr('transform', `translate(0, ${yPos})`);
 
+        // Item background
         legendItem.append('rect')
-          .attr('width', 15)
-          .attr('height', 15)
-          .attr('fill', colorScale(level));
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', legendWidth - padding * 2)
+          .attr('height', itemHeight)
+          .attr('rx', 4)
+          .attr('ry', 4)
+          .attr('fill', 'white')
+          .attr('stroke', '#e2e8f0')
+          .attr('stroke-width', 1);
+
+        // Color square
+        legendItem.append('rect')
+          .attr('x', 12)
+          .attr('y', 7)
+          .attr('width', 20)
+          .attr('height', 20)
+          .attr('rx', 3)
+          .attr('ry', 3)
+          .attr('fill', colorScale(level))
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 2);
+
+        // Level text
+        const levelText = level.charAt(0).toUpperCase() + level.slice(1);
+        const scoreText = level === 'high' ? '≥75' : level === 'medium' ? '65-74' : '<65';
+        
+        legendItem.append('text')
+          .attr('x', 42)
+          .attr('y', 20)
+          .attr('dy', '0.35em')
+          .attr('font-size', '13px')
+          .attr('font-weight', '600')
+          .attr('fill', '#2d3748')
+          .text(levelText);
 
         legendItem.append('text')
-          .attr('x', 20)
-          .attr('dy', '0.8em')
+          .attr('x', 100)
+          .attr('y', 20)
+          .attr('dy', '0.35em')
           .attr('font-size', '12px')
-          .text(level.charAt(0).toUpperCase() + level.slice(1) + ' (≥75/65-74/<65)');
+          .attr('fill', '#718096')
+          .text(`Score: ${scoreText}`);
       });
     }
 
@@ -315,8 +430,29 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       <div style={{ position: 'relative' }}>
         <div ref={groupedBarRef} style={{ visibility: viewMode === 'grouped' ? 'visible' : 'hidden', position: viewMode === 'grouped' ? 'static' : 'absolute' }}></div>
         <div ref={stackedBarRef} style={{ visibility: viewMode === 'stacked' ? 'visible' : 'hidden', position: viewMode === 'stacked' ? 'static' : 'absolute' }}></div>
-        <div ref={groupedLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10, display: viewMode === 'grouped' ? 'block' : 'none' }}></div>
-        <div ref={stackedLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10, display: viewMode === 'stacked' ? 'block' : 'none' }}></div>
+      </div>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        marginTop: '20px',
+        padding: '0 20px'
+      }}>
+        <div 
+          ref={groupedLegendRef} 
+          style={{ 
+            display: viewMode === 'grouped' ? 'block' : 'none',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px'
+          }}
+        ></div>
+        <div 
+          ref={stackedLegendRef} 
+          style={{ 
+            display: viewMode === 'stacked' ? 'block' : 'none',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px'
+          }}
+        ></div>
       </div>
     </div>
   );

@@ -129,47 +129,119 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       .attr('font-weight', 'bold')
       .text('Factor Impact Ranking');
 
-    // Create legend outside SVG
+    // Create legend outside SVG with improved styling
     if (legendRef.current) {
       d3.select(legendRef.current).selectAll('*').remove();
+      const padding = 20;
+      const itemHeight = 32;
+      const itemSpacing = 10;
+      const legendWidth = 280;
+      const legendHeight = 2 * (itemHeight + itemSpacing) + padding * 2 + 30;
+      
       const legendSvg = d3.select(legendRef.current)
         .append('svg')
-        .attr('width', 150)
-        .attr('height', 50);
+        .attr('width', legendWidth)
+        .attr('height', legendHeight);
+
+      // Background rectangle with rounded corners
+      const bg = legendSvg.append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', legendWidth)
+        .attr('height', legendHeight)
+        .attr('rx', 8)
+        .attr('ry', 8)
+        .attr('fill', '#f8f9fa')
+        .attr('stroke', '#e2e8f0')
+        .attr('stroke-width', 2);
+
+      // Title
+      legendSvg.append('text')
+        .attr('x', legendWidth / 2)
+        .attr('y', 25)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '14px')
+        .attr('font-weight', '600')
+        .attr('fill', '#2d3748')
+        .text('Impact Direction');
 
       const legend = legendSvg.append('g')
-        .attr('transform', 'translate(10, 5)');
+        .attr('transform', `translate(${padding}, ${padding + 30})`);
 
-      legend.append('rect')
-        .attr('width', 15)
-        .attr('height', 15)
-        .attr('fill', '#27ae60');
+      const impactTypes = [
+        { label: 'Positive Impact', color: '#27ae60', description: 'Higher values improve performance' },
+        { label: 'Negative Impact', color: '#e74c3c', description: 'Higher values decrease performance' }
+      ];
 
-      legend.append('text')
-        .attr('x', 20)
-        .attr('y', 12)
-        .attr('font-size', '12px')
-        .text('Positive Impact');
+      impactTypes.forEach((type, i) => {
+        const yPos = i * (itemHeight + itemSpacing);
+        const legendItem = legend.append('g')
+          .attr('transform', `translate(0, ${yPos})`);
 
-      legend.append('rect')
-        .attr('y', 20)
-        .attr('width', 15)
-        .attr('height', 15)
-        .attr('fill', '#e74c3c');
+        // Item background
+        legendItem.append('rect')
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', legendWidth - padding * 2)
+          .attr('height', itemHeight)
+          .attr('rx', 4)
+          .attr('ry', 4)
+          .attr('fill', 'white')
+          .attr('stroke', '#e2e8f0')
+          .attr('stroke-width', 1);
 
-      legend.append('text')
-        .attr('x', 20)
-        .attr('y', 32)
-        .attr('font-size', '12px')
-        .text('Negative Impact');
+        // Color square
+        legendItem.append('rect')
+          .attr('x', 12)
+          .attr('y', 7)
+          .attr('width', 20)
+          .attr('height', 20)
+          .attr('rx', 3)
+          .attr('ry', 3)
+          .attr('fill', type.color)
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 2);
+
+        // Label text
+        legendItem.append('text')
+          .attr('x', 42)
+          .attr('y', 20)
+          .attr('dy', '0.35em')
+          .attr('font-size', '13px')
+          .attr('font-weight', '600')
+          .attr('fill', '#2d3748')
+          .text(type.label);
+
+        // Description text
+        legendItem.append('text')
+          .attr('x', 180)
+          .attr('y', 20)
+          .attr('dy', '0.35em')
+          .attr('font-size', '11px')
+          .attr('fill', '#718096')
+          .text(type.description);
+      });
     }
 
   }, [data, onFactorSelect]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       <div ref={chartRef}></div>
-      <div ref={legendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10 }}></div>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        marginTop: '20px',
+        padding: '0 20px'
+      }}>
+        <div 
+          ref={legendRef} 
+          style={{ 
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px'
+          }}
+        ></div>
+      </div>
     </div>
   );
 };
