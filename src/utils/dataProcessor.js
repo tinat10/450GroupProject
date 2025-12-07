@@ -209,10 +209,13 @@ export const applyFilters = (data, filters) => {
     filtered = filtered.filter(d => d.Gender === filters.gender);
   }
   
-  if (filters.learningDisabilities !== undefined) {
-    if (filters.learningDisabilities === false) {
-      filtered = filtered.filter(d => d.Learning_Disabilities === 'No');
-    }
+  if (filters.learningDisabilities !== undefined && filters.learningDisabilities === true) {
+    // Exclude students with learning disabilities (only show 'No')
+    // Also handle empty/null values by excluding them
+    filtered = filtered.filter(d => {
+      const ld = d.Learning_Disabilities;
+      return ld === 'No' || ld === 'no' || ld === 'NO';
+    });
   }
   
   if (filters.scoreRange) {

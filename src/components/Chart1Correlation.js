@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { calculateCorrelationsWithTarget, binData } from '../utils/dataProcessor';
+// Import getNumericFactors from dataLoader (not dataProcessor)
 import { getNumericFactors } from '../utils/dataLoader';
 import { correlationColorScale, lineColorScale } from '../utils/colorScales';
 
