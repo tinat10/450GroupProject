@@ -6,7 +6,7 @@ import { impactColorScale } from '../utils/colorScales';
 const Chart4Impact = ({ data, onFactorSelect }) => {
   const chartRef = useRef(null);
   const legendRef = useRef(null);
-  const margin = { top: 20, right: 40, bottom: 40, left: 200 };
+  const margin = { top: 50, right: 40, bottom: 70, left: 200 };
 
   useEffect(() => {
     if (!data || data.length === 0 || !chartRef.current) return;
@@ -115,7 +115,7 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       .call(d3.axisBottom(xScale).tickFormat(d => d.toFixed(1)));
 
     g.append('text')
-      .attr('transform', `translate(${width / 2}, ${height + margin.bottom - 10})`)
+      .attr('transform', `translate(${width / 2}, ${height + margin.bottom - 20})`)
       .style('text-anchor', 'middle')
       .attr('font-size', '14px')
       .text('Impact Score (Top 25% vs Bottom 25%)');
@@ -123,7 +123,7 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
     // Title
     svg.append('text')
       .attr('x', containerWidth / 2)
-      .attr('y', 15)
+      .attr('y', 25)
       .attr('text-anchor', 'middle')
       .attr('font-size', '16px')
       .attr('font-weight', 'bold')
@@ -135,7 +135,7 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       const padding = 20;
       const itemHeight = 32;
       const itemSpacing = 10;
-      const legendWidth = 280;
+      const legendWidth = 420; // Increased width to accommodate descriptions
       const legendHeight = 2 * (itemHeight + itemSpacing) + padding * 2 + 30;
       
       const legendSvg = d3.select(legendRef.current)
@@ -212,9 +212,9 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
           .attr('fill', '#2d3748')
           .text(type.label);
 
-        // Description text
+        // Description text - positioned with enough space
         legendItem.append('text')
-          .attr('x', 180)
+          .attr('x', 170)
           .attr('y', 20)
           .attr('dy', '0.35em')
           .attr('font-size', '11px')
