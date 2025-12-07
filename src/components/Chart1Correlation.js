@@ -8,6 +8,8 @@ import { correlationColorScale, lineColorScale } from '../utils/colorScales';
 const Chart1Correlation = ({ data, selectedFactor, onFactorSelect }) => {
   const heatmapRef = useRef(null);
   const lineChartRef = useRef(null);
+  const heatmapLegendRef = useRef(null);
+  const lineLegendRef = useRef(null);
   const margin = { top: 40, right: 40, bottom: 60, left: 80 };
 
   useEffect(() => {
@@ -104,45 +106,53 @@ const Chart1Correlation = ({ data, selectedFactor, onFactorSelect }) => {
       .attr('font-weight', 'bold')
       .text('Correlation with Exam Score');
 
-    // Color legend - positioned top right, just below title, above chart area
-    const legendWidth = 200;
-    const legendHeight = 20;
-    const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - legendWidth - 20}, 35)`);
+    // Create legend outside SVG
+    if (heatmapLegendRef.current) {
+      d3.select(heatmapLegendRef.current).selectAll('*').remove();
+      const legendSvg = d3.select(heatmapLegendRef.current)
+        .append('svg')
+        .attr('width', 220)
+        .attr('height', 50);
 
-    const legendScale = d3.scaleLinear()
-      .domain([-1, 1])
-      .range([0, legendWidth]);
+      const legendWidth = 200;
+      const legendHeight = 20;
+      const legend = legendSvg.append('g')
+        .attr('transform', 'translate(10, 5)');
 
-    const legendAxis = d3.axisBottom(legendScale)
-      .ticks(5)
-      .tickFormat(d3.format('.1f'));
+      const legendScale = d3.scaleLinear()
+        .domain([-1, 1])
+        .range([0, legendWidth]);
 
-    const defs = svg.append('defs');
-    const gradient = defs.append('linearGradient')
-      .attr('id', 'correlation-gradient')
-      .attr('x1', '0%')
-      .attr('x2', '100%');
+      const legendAxis = d3.axisBottom(legendScale)
+        .ticks(5)
+        .tickFormat(d3.format('.1f'));
 
-    gradient.selectAll('stop')
-      .data([
-        { offset: '0%', color: d3.interpolateRdBu(0) },
-        { offset: '50%', color: d3.interpolateRdBu(0.5) },
-        { offset: '100%', color: d3.interpolateRdBu(1) }
-      ])
-      .enter()
-      .append('stop')
-      .attr('offset', d => d.offset)
-      .attr('stop-color', d => d.color);
+      const defs = legendSvg.append('defs');
+      const gradient = defs.append('linearGradient')
+        .attr('id', 'correlation-gradient')
+        .attr('x1', '0%')
+        .attr('x2', '100%');
 
-    legend.append('rect')
-      .attr('width', legendWidth)
-      .attr('height', legendHeight)
-      .attr('fill', 'url(#correlation-gradient)');
+      gradient.selectAll('stop')
+        .data([
+          { offset: '0%', color: d3.interpolateRdBu(0) },
+          { offset: '50%', color: d3.interpolateRdBu(0.5) },
+          { offset: '100%', color: d3.interpolateRdBu(1) }
+        ])
+        .enter()
+        .append('stop')
+        .attr('offset', d => d.offset)
+        .attr('stop-color', d => d.color);
 
-    legend.append('g')
-      .attr('transform', `translate(0,${legendHeight})`)
-      .call(legendAxis);
+      legend.append('rect')
+        .attr('width', legendWidth)
+        .attr('height', legendHeight)
+        .attr('fill', 'url(#correlation-gradient)');
+
+      legend.append('g')
+        .attr('transform', `translate(0,${legendHeight})`)
+        .call(legendAxis);
+    }
 
   }, [data, onFactorSelect]);
 
@@ -241,26 +251,34 @@ const Chart1Correlation = ({ data, selectedFactor, onFactorSelect }) => {
       .style('text-anchor', 'middle')
       .text('Factor Value');
 
-    // Legend - positioned top right, just below title, above chart area
-    const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - 200}, 35)`);
+    // Create legend outside SVG
+    if (lineLegendRef.current) {
+      d3.select(lineLegendRef.current).selectAll('*').remove();
+      const legendSvg = d3.select(lineLegendRef.current)
+        .append('svg')
+        .attr('width', 200)
+        .attr('height', topFactors.length * 25 + 10);
 
-    topFactors.forEach((factor, i) => {
-      const legendItem = legend.append('g')
-        .attr('transform', `translate(0, ${i * 20})`);
+      const legend = legendSvg.append('g')
+        .attr('transform', 'translate(10, 5)');
 
-      legendItem.append('line')
-        .attr('x1', 0)
-        .attr('x2', 20)
-        .attr('stroke', lineColorScale(i))
-        .attr('stroke-width', 2);
+      topFactors.forEach((factor, i) => {
+        const legendItem = legend.append('g')
+          .attr('transform', `translate(0, ${i * 20})`);
 
-      legendItem.append('text')
-        .attr('x', 25)
-        .attr('dy', '0.35em')
-        .attr('font-size', '12px')
-        .text(factor.replace(/_/g, ' '));
-    });
+        legendItem.append('line')
+          .attr('x1', 0)
+          .attr('x2', 20)
+          .attr('stroke', lineColorScale(i))
+          .attr('stroke-width', 2);
+
+        legendItem.append('text')
+          .attr('x', 25)
+          .attr('dy', '0.35em')
+          .attr('font-size', '12px')
+          .text(factor.replace(/_/g, ' '));
+      });
+    }
 
     // Title
     svg.append('text')
@@ -275,8 +293,14 @@ const Chart1Correlation = ({ data, selectedFactor, onFactorSelect }) => {
 
   return (
     <div>
-      <div ref={heatmapRef} style={{ marginBottom: '20px' }}></div>
-      <div ref={lineChartRef}></div>
+      <div style={{ position: 'relative', marginBottom: '20px' }}>
+        <div ref={heatmapRef}></div>
+        <div ref={heatmapLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10 }}></div>
+      </div>
+      <div style={{ position: 'relative' }}>
+        <div ref={lineChartRef}></div>
+        <div ref={lineLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10 }}></div>
+      </div>
     </div>
   );
 };

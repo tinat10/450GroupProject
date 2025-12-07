@@ -5,6 +5,7 @@ import { impactColorScale } from '../utils/colorScales';
 
 const Chart4Impact = ({ data, onFactorSelect }) => {
   const chartRef = useRef(null);
+  const legendRef = useRef(null);
   const margin = { top: 20, right: 40, bottom: 40, left: 200 };
 
   useEffect(() => {
@@ -128,36 +129,49 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       .attr('font-weight', 'bold')
       .text('Factor Impact Ranking');
 
-    // Legend - positioned top right, just below title, above chart area
-    const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - 150}, 35)`);
+    // Create legend outside SVG
+    if (legendRef.current) {
+      d3.select(legendRef.current).selectAll('*').remove();
+      const legendSvg = d3.select(legendRef.current)
+        .append('svg')
+        .attr('width', 150)
+        .attr('height', 50);
 
-    legend.append('rect')
-      .attr('width', 15)
-      .attr('height', 15)
-      .attr('fill', '#27ae60');
+      const legend = legendSvg.append('g')
+        .attr('transform', 'translate(10, 5)');
 
-    legend.append('text')
-      .attr('x', 20)
-      .attr('y', 12)
-      .attr('font-size', '12px')
-      .text('Positive Impact');
+      legend.append('rect')
+        .attr('width', 15)
+        .attr('height', 15)
+        .attr('fill', '#27ae60');
 
-    legend.append('rect')
-      .attr('y', 20)
-      .attr('width', 15)
-      .attr('height', 15)
-      .attr('fill', '#e74c3c');
+      legend.append('text')
+        .attr('x', 20)
+        .attr('y', 12)
+        .attr('font-size', '12px')
+        .text('Positive Impact');
 
-    legend.append('text')
-      .attr('x', 20)
-      .attr('y', 32)
-      .attr('font-size', '12px')
-      .text('Negative Impact');
+      legend.append('rect')
+        .attr('y', 20)
+        .attr('width', 15)
+        .attr('height', 15)
+        .attr('fill', '#e74c3c');
+
+      legend.append('text')
+        .attr('x', 20)
+        .attr('y', 32)
+        .attr('font-size', '12px')
+        .text('Negative Impact');
+    }
 
   }, [data, onFactorSelect]);
 
-  return <div ref={chartRef}></div>;
+  return (
+    <div style={{ position: 'relative' }}>
+      <div ref={chartRef}></div>
+      <div ref={legendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10 }}></div>
+    </div>
+  );
 };
 
 export default Chart4Impact;

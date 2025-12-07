@@ -7,6 +7,8 @@ import { categoryColorScale } from '../utils/colorScales';
 const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
   const groupedBarRef = useRef(null);
   const stackedBarRef = useRef(null);
+  const groupedLegendRef = useRef(null);
+  const stackedLegendRef = useRef(null);
   const [viewMode, setViewMode] = useState('grouped');
   const [selectedFactor, setSelectedFactor] = useState('Parental_Involvement');
   const margin = { top: 40, right: 40, bottom: 60, left: 80 };
@@ -110,26 +112,34 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       .attr('font-weight', 'bold')
       .text(`Average Exam Score by ${selectedFactor.replace(/_/g, ' ')}`);
 
-    // Legend for grouped - positioned top right, just below title, above chart area
-    const legend1 = svg1.append('g')
-      .attr('transform', `translate(${containerWidth - 150}, 35)`);
-    
-    const uniqueCategories = [...new Set(groupedData.map(d => d.category))];
-    uniqueCategories.forEach((cat, i) => {
-      const legendItem = legend1.append('g')
-        .attr('transform', `translate(0, ${i * 20})`);
+    // Create legend outside SVG for grouped view
+    if (groupedLegendRef.current) {
+      d3.select(groupedLegendRef.current).selectAll('*').remove();
+      const uniqueCategories = [...new Set(groupedData.map(d => d.category))];
+      const legendSvg = d3.select(groupedLegendRef.current)
+        .append('svg')
+        .attr('width', 180)
+        .attr('height', uniqueCategories.length * 25 + 10);
 
-      legendItem.append('rect')
-        .attr('width', 15)
-        .attr('height', 15)
-        .attr('fill', categoryColorScale(cat));
+      const legend = legendSvg.append('g')
+        .attr('transform', 'translate(10, 5)');
 
-      legendItem.append('text')
-        .attr('x', 20)
-        .attr('dy', '0.8em')
-        .attr('font-size', '12px')
-        .text(cat);
-    });
+      uniqueCategories.forEach((cat, i) => {
+        const legendItem = legend.append('g')
+          .attr('transform', `translate(0, ${i * 20})`);
+
+        legendItem.append('rect')
+          .attr('width', 15)
+          .attr('height', 15)
+          .attr('fill', categoryColorScale(cat));
+
+        legendItem.append('text')
+          .attr('x', 20)
+          .attr('dy', '0.8em')
+          .attr('font-size', '12px')
+          .text(cat);
+      });
+    }
 
     // Stacked Bar Chart
     const stackedData = calculatePerformanceDistribution(data, selectedFactor);
@@ -211,25 +221,33 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       .attr('font-weight', 'bold')
       .text(`Performance Distribution by ${selectedFactor.replace(/_/g, ' ')}`);
 
-    // Legend for stacked - positioned top right, just below title, above chart area
-    const legend2 = svg2.append('g')
-      .attr('transform', `translate(${containerWidth - 250}, 35)`);
+    // Create legend outside SVG for stacked view
+    if (stackedLegendRef.current) {
+      d3.select(stackedLegendRef.current).selectAll('*').remove();
+      const legendSvg = d3.select(stackedLegendRef.current)
+        .append('svg')
+        .attr('width', 250)
+        .attr('height', 80);
 
-    ['high', 'medium', 'low'].forEach((level, i) => {
-      const legendItem = legend2.append('g')
-        .attr('transform', `translate(0, ${i * 20})`);
+      const legend = legendSvg.append('g')
+        .attr('transform', 'translate(10, 5)');
 
-      legendItem.append('rect')
-        .attr('width', 15)
-        .attr('height', 15)
-        .attr('fill', colorScale(level));
+      ['high', 'medium', 'low'].forEach((level, i) => {
+        const legendItem = legend.append('g')
+          .attr('transform', `translate(0, ${i * 20})`);
 
-      legendItem.append('text')
-        .attr('x', 20)
-        .attr('dy', '0.8em')
-        .attr('font-size', '12px')
-        .text(level.charAt(0).toUpperCase() + level.slice(1) + ' (≥75/65-74/<65)');
-    });
+        legendItem.append('rect')
+          .attr('width', 15)
+          .attr('height', 15)
+          .attr('fill', colorScale(level));
+
+        legendItem.append('text')
+          .attr('x', 20)
+          .attr('dy', '0.8em')
+          .attr('font-size', '12px')
+          .text(level.charAt(0).toUpperCase() + level.slice(1) + ' (≥75/65-74/<65)');
+      });
+    }
 
   }, [data, selectedFactor, viewMode, onCategorySelect]);
 
@@ -274,8 +292,14 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
           Stacked
         </button>
       </div>
-      <div ref={groupedBarRef}></div>
-      <div ref={stackedBarRef}></div>
+      <div style={{ position: 'relative' }}>
+        <div ref={groupedBarRef} style={{ display: viewMode === 'grouped' ? 'block' : 'none' }}></div>
+        <div ref={groupedLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10, display: viewMode === 'grouped' ? 'block' : 'none' }}></div>
+      </div>
+      <div style={{ position: 'relative' }}>
+        <div ref={stackedBarRef} style={{ display: viewMode === 'stacked' ? 'block' : 'none' }}></div>
+        <div ref={stackedLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10, display: viewMode === 'stacked' ? 'block' : 'none' }}></div>
+      </div>
     </div>
   );
 };

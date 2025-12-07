@@ -5,6 +5,7 @@ import { categoryColorScale } from '../utils/colorScales';
 
 const Chart3Interactions = ({ data, onCombinationSelect }) => {
   const chartRef = useRef(null);
+  const legendRef = useRef(null);
   const [factor1, setFactor1] = useState('Motivation_Level');
   const [factor2, setFactor2] = useState('Parental_Involvement');
   const margin = { top: 40, right: 40, bottom: 80, left: 80 };
@@ -133,25 +134,33 @@ const Chart3Interactions = ({ data, onCombinationSelect }) => {
       .attr('font-weight', 'bold')
       .text(`Interaction: ${factor1.replace(/_/g, ' ')} × ${factor2.replace(/_/g, ' ')}`);
 
-    // Legend - positioned top right, just below title, above chart area
-    const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - 180}, 35)`);
+    // Create legend outside SVG
+    if (legendRef.current) {
+      d3.select(legendRef.current).selectAll('*').remove();
+      const legendSvg = d3.select(legendRef.current)
+        .append('svg')
+        .attr('width', 180)
+        .attr('height', factor2Values.length * 25 + 10);
 
-    factor2Values.forEach((val, i) => {
-      const legendItem = legend.append('g')
-        .attr('transform', `translate(0, ${i * 20})`);
+      const legend = legendSvg.append('g')
+        .attr('transform', 'translate(10, 5)');
 
-      legendItem.append('rect')
-        .attr('width', 15)
-        .attr('height', 15)
-        .attr('fill', categoryColorScale(val));
+      factor2Values.forEach((val, i) => {
+        const legendItem = legend.append('g')
+          .attr('transform', `translate(0, ${i * 20})`);
 
-      legendItem.append('text')
-        .attr('x', 20)
-        .attr('dy', '0.8em')
-        .attr('font-size', '12px')
-        .text(val);
-    });
+        legendItem.append('rect')
+          .attr('width', 15)
+          .attr('height', 15)
+          .attr('fill', categoryColorScale(val));
+
+        legendItem.append('text')
+          .attr('x', 20)
+          .attr('dy', '0.8em')
+          .attr('font-size', '12px')
+          .text(val);
+      });
+    }
 
   }, [data, factor1, factor2, onCombinationSelect]);
 
@@ -179,7 +188,10 @@ const Chart3Interactions = ({ data, onCombinationSelect }) => {
           ))}
         </select>
       </div>
-      <div ref={chartRef}></div>
+      <div style={{ position: 'relative' }}>
+        <div ref={chartRef}></div>
+        <div ref={legendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10 }}></div>
+      </div>
     </div>
   );
 };
