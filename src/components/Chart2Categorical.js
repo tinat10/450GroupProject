@@ -16,16 +16,33 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
   const factors = getCategoricalFactors();
 
   useEffect(() => {
-    if (!data || data.length === 0 || !groupedBarRef.current || !stackedBarRef.current) return;
+    if (!data || data.length === 0) return;
 
     const factorData = factors.find(f => f.key === selectedFactor);
     if (!factorData) return;
 
-    // Clear previous
-    d3.select(groupedBarRef.current).selectAll('*').remove();
-    d3.select(stackedBarRef.current).selectAll('*').remove();
+    // Get container width - use visibility instead of display so width is always available
+    let containerWidth = 800; // fallback width
+    if (groupedBarRef.current && groupedBarRef.current.offsetWidth > 0) {
+      containerWidth = groupedBarRef.current.offsetWidth;
+    } else if (stackedBarRef.current && stackedBarRef.current.offsetWidth > 0) {
+      containerWidth = stackedBarRef.current.offsetWidth;
+    } else if (groupedBarRef.current && groupedBarRef.current.parentElement) {
+      // Try to get width from parent container
+      const parent = groupedBarRef.current.parentElement;
+      if (parent.offsetWidth > 0) {
+        containerWidth = parent.offsetWidth;
+      }
+    }
 
-    const containerWidth = groupedBarRef.current.offsetWidth;
+    // Clear previous
+    if (groupedBarRef.current) {
+      d3.select(groupedBarRef.current).selectAll('*').remove();
+    }
+    if (stackedBarRef.current) {
+      d3.select(stackedBarRef.current).selectAll('*').remove();
+    }
+
     const containerHeightGrouped = 400;
     const containerHeightStacked = 500; // Taller for stacked view
     const width = containerWidth - margin.left - margin.right;
@@ -34,11 +51,14 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     const groupedData = groupByCategory(data, selectedFactor);
     const heightGrouped = containerHeightGrouped - margin.top - margin.bottom;
     
-    const svg1 = d3.select(groupedBarRef.current)
-      .append('svg')
-      .attr('width', containerWidth)
-      .attr('height', containerHeightGrouped)
-      .style('display', viewMode === 'grouped' ? 'block' : 'none');
+    // Only create grouped chart SVG if ref exists
+    let svg1;
+    if (groupedBarRef.current) {
+      svg1 = d3.select(groupedBarRef.current)
+        .append('svg')
+        .attr('width', containerWidth)
+        .attr('height', containerHeightGrouped)
+        .style('visibility', viewMode === 'grouped' ? 'visible' : 'hidden');
 
     const g1 = svg1.append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -149,7 +169,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       .append('svg')
       .attr('width', containerWidth)
       .attr('height', containerHeightStacked)
-      .style('display', viewMode === 'stacked' ? 'block' : 'none');
+      .style('visibility', viewMode === 'stacked' ? 'visible' : 'hidden');
 
     const g2 = svg2.append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -293,11 +313,9 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
         </button>
       </div>
       <div style={{ position: 'relative' }}>
-        <div ref={groupedBarRef} style={{ display: viewMode === 'grouped' ? 'block' : 'none' }}></div>
+        <div ref={groupedBarRef} style={{ visibility: viewMode === 'grouped' ? 'visible' : 'hidden', position: viewMode === 'grouped' ? 'static' : 'absolute' }}></div>
+        <div ref={stackedBarRef} style={{ visibility: viewMode === 'stacked' ? 'visible' : 'hidden', position: viewMode === 'stacked' ? 'static' : 'absolute' }}></div>
         <div ref={groupedLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10, display: viewMode === 'grouped' ? 'block' : 'none' }}></div>
-      </div>
-      <div style={{ position: 'relative' }}>
-        <div ref={stackedBarRef} style={{ display: viewMode === 'stacked' ? 'block' : 'none' }}></div>
         <div ref={stackedLegendRef} style={{ position: 'absolute', top: '5px', right: '10px', zIndex: 10, display: viewMode === 'stacked' ? 'block' : 'none' }}></div>
       </div>
     </div>
