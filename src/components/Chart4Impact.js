@@ -128,9 +128,9 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       .attr('font-weight', 'bold')
       .text('Factor Impact Ranking');
 
-    // Legend - moved up near title
+    // Legend - positioned top right, below title
     const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - 150}, 30)`);
+      .attr('transform', `translate(${containerWidth - 150}, 40)`);
 
     legend.append('rect')
       .attr('width', 15)

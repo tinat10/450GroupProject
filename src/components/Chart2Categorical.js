@@ -24,17 +24,18 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     d3.select(stackedBarRef.current).selectAll('*').remove();
 
     const containerWidth = groupedBarRef.current.offsetWidth;
-    const containerHeight = 400;
+    const containerHeightGrouped = 400;
+    const containerHeightStacked = 500; // Taller for stacked view
     const width = containerWidth - margin.left - margin.right;
-    const height = containerHeight - margin.top - margin.bottom;
 
     // Grouped Bar Chart
     const groupedData = groupByCategory(data, selectedFactor);
+    const heightGrouped = containerHeightGrouped - margin.top - margin.bottom;
     
     const svg1 = d3.select(groupedBarRef.current)
       .append('svg')
       .attr('width', containerWidth)
-      .attr('height', containerHeight)
+      .attr('height', containerHeightGrouped)
       .style('display', viewMode === 'grouped' ? 'block' : 'none');
 
     const g1 = svg1.append('g')
@@ -48,7 +49,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     const yScale1 = d3.scaleLinear()
       .domain([0, d3.max(groupedData, d => d.avgScore) * 1.1])
       .nice()
-      .range([height, 0]);
+      .range([heightGrouped, 0]);
 
     // Bars
     g1.selectAll('.bar')
@@ -59,7 +60,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       .attr('x', d => xScale1(d.category))
       .attr('y', d => yScale1(d.avgScore))
       .attr('width', xScale1.bandwidth())
-      .attr('height', d => height - yScale1(d.avgScore))
+      .attr('height', d => heightGrouped - yScale1(d.avgScore))
       .attr('fill', d => categoryColorScale(d.category))
       .attr('stroke', '#fff')
       .attr('stroke-width', 2)
@@ -87,7 +88,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
 
     // Axes
     g1.append('g')
-      .attr('transform', `translate(0,${height})`)
+      .attr('transform', `translate(0,${heightGrouped})`)
       .call(d3.axisBottom(xScale1));
 
     g1.append('g')
@@ -96,7 +97,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     g1.append('text')
       .attr('transform', 'rotate(-90)')
       .attr('y', 0 - margin.left)
-      .attr('x', 0 - (height / 2))
+      .attr('x', 0 - (heightGrouped / 2))
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text('Average Exam Score');
@@ -111,11 +112,12 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
 
     // Stacked Bar Chart
     const stackedData = calculatePerformanceDistribution(data, selectedFactor);
+    const heightStacked = containerHeightStacked - margin.top - margin.bottom;
     
     const svg2 = d3.select(stackedBarRef.current)
       .append('svg')
       .attr('width', containerWidth)
-      .attr('height', containerHeight)
+      .attr('height', containerHeightStacked)
       .style('display', viewMode === 'stacked' ? 'block' : 'none');
 
     const g2 = svg2.append('g')
@@ -128,7 +130,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
 
     const yScale2 = d3.scaleLinear()
       .domain([0, 100])
-      .range([height, 0]);
+      .range([heightStacked, 0]);
 
     const stack = d3.stack()
       .keys(['low', 'medium', 'high'])
@@ -166,7 +168,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
 
     // Axes
     g2.append('g')
-      .attr('transform', `translate(0,${height})`)
+      .attr('transform', `translate(0,${heightStacked})`)
       .call(d3.axisBottom(xScale2));
 
     g2.append('g')
@@ -175,7 +177,7 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     g2.append('text')
       .attr('transform', 'rotate(-90)')
       .attr('y', 0 - margin.left)
-      .attr('x', 0 - (height / 2))
+      .attr('x', 0 - (heightStacked / 2))
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text('Percentage of Students');
@@ -188,9 +190,9 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       .attr('font-weight', 'bold')
       .text(`Performance Distribution by ${selectedFactor.replace(/_/g, ' ')}`);
 
-    // Legend for stacked - moved up near title
+    // Legend for stacked - positioned top right, below title
     const legend2 = svg2.append('g')
-      .attr('transform', `translate(${containerWidth - 200}, 30)`);
+      .attr('transform', `translate(${containerWidth - 250}, 40)`);
 
     ['high', 'medium', 'low'].forEach((level, i) => {
       const legendItem = legend2.append('g')

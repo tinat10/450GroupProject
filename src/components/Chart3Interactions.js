@@ -133,9 +133,9 @@ const Chart3Interactions = ({ data, onCombinationSelect }) => {
       .attr('font-weight', 'bold')
       .text(`Interaction: ${factor1.replace(/_/g, ' ')} × ${factor2.replace(/_/g, ' ')}`);
 
-    // Legend - moved up near title
+    // Legend - positioned top right, below title
     const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - 150}, 30)`);
+      .attr('transform', `translate(${containerWidth - 180}, 40)`);
 
     factor2Values.forEach((val, i) => {
       const legendItem = legend.append('g')
