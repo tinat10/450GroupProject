@@ -103,11 +103,11 @@ const Chart1Correlation = ({ data, selectedFactor, onFactorSelect }) => {
       .attr('font-weight', 'bold')
       .text('Correlation with Exam Score');
 
-    // Color legend - positioned top right, below title
+    // Color legend - positioned top right, just below title, above chart area
     const legendWidth = 200;
     const legendHeight = 20;
     const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - legendWidth - 20}, 40)`);
+      .attr('transform', `translate(${containerWidth - legendWidth - 20}, 35)`);
 
     const legendScale = d3.scaleLinear()
       .domain([-1, 1])
@@ -240,9 +240,9 @@ const Chart1Correlation = ({ data, selectedFactor, onFactorSelect }) => {
       .style('text-anchor', 'middle')
       .text('Factor Value');
 
-    // Legend - positioned top right, below title
+    // Legend - positioned top right, just below title, above chart area
     const legend = svg.append('g')
-      .attr('transform', `translate(${containerWidth - 200}, 40)`);
+      .attr('transform', `translate(${containerWidth - 200}, 35)`);
 
     topFactors.forEach((factor, i) => {
       const legendItem = legend.append('g')

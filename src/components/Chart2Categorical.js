@@ -110,6 +110,27 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       .attr('font-weight', 'bold')
       .text(`Average Exam Score by ${selectedFactor.replace(/_/g, ' ')}`);
 
+    // Legend for grouped - positioned top right, just below title, above chart area
+    const legend1 = svg1.append('g')
+      .attr('transform', `translate(${containerWidth - 150}, 35)`);
+    
+    const uniqueCategories = [...new Set(groupedData.map(d => d.category))];
+    uniqueCategories.forEach((cat, i) => {
+      const legendItem = legend1.append('g')
+        .attr('transform', `translate(0, ${i * 20})`);
+
+      legendItem.append('rect')
+        .attr('width', 15)
+        .attr('height', 15)
+        .attr('fill', categoryColorScale(cat));
+
+      legendItem.append('text')
+        .attr('x', 20)
+        .attr('dy', '0.8em')
+        .attr('font-size', '12px')
+        .text(cat);
+    });
+
     // Stacked Bar Chart
     const stackedData = calculatePerformanceDistribution(data, selectedFactor);
     const heightStacked = containerHeightStacked - margin.top - margin.bottom;
@@ -190,9 +211,9 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
       .attr('font-weight', 'bold')
       .text(`Performance Distribution by ${selectedFactor.replace(/_/g, ' ')}`);
 
-    // Legend for stacked - positioned top right, below title
+    // Legend for stacked - positioned top right, just below title, above chart area
     const legend2 = svg2.append('g')
-      .attr('transform', `translate(${containerWidth - 250}, 40)`);
+      .attr('transform', `translate(${containerWidth - 250}, 35)`);
 
     ['high', 'medium', 'low'].forEach((level, i) => {
       const legendItem = legend2.append('g')
