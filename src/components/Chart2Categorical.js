@@ -51,86 +51,86 @@ const Chart2Categorical = ({ data, selectedCategory, onCategorySelect }) => {
     const groupedData = groupByCategory(data, selectedFactor);
     const heightGrouped = containerHeightGrouped - margin.top - margin.bottom;
     
-    // Only create grouped chart SVG if ref exists
-    let svg1;
+    // Grouped Bar Chart - create SVG if ref exists
     if (groupedBarRef.current) {
-      svg1 = d3.select(groupedBarRef.current)
+      const svg1 = d3.select(groupedBarRef.current)
         .append('svg')
         .attr('width', containerWidth)
         .attr('height', containerHeightGrouped)
         .style('visibility', viewMode === 'grouped' ? 'visible' : 'hidden');
 
-    const g1 = svg1.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      const g1 = svg1.append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    const xScale1 = d3.scaleBand()
-      .domain(groupedData.map(d => d.category))
-      .range([0, width])
-      .padding(0.2);
+      const xScale1 = d3.scaleBand()
+        .domain(groupedData.map(d => d.category))
+        .range([0, width])
+        .padding(0.2);
 
-    const yScale1 = d3.scaleLinear()
-      .domain([0, d3.max(groupedData, d => d.avgScore) * 1.1])
-      .nice()
-      .range([heightGrouped, 0]);
+      const yScale1 = d3.scaleLinear()
+        .domain([0, d3.max(groupedData, d => d.avgScore) * 1.1])
+        .nice()
+        .range([heightGrouped, 0]);
 
-    // Bars
-    g1.selectAll('.bar')
-      .data(groupedData)
-      .enter()
-      .append('rect')
-      .attr('class', 'bar')
-      .attr('x', d => xScale1(d.category))
-      .attr('y', d => yScale1(d.avgScore))
-      .attr('width', xScale1.bandwidth())
-      .attr('height', d => heightGrouped - yScale1(d.avgScore))
-      .attr('fill', d => categoryColorScale(d.category))
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 2)
-      .style('cursor', 'pointer')
-      .on('mouseover', function(event, d) {
-        d3.select(this).attr('opacity', 0.7);
-        if (onCategorySelect) onCategorySelect({ factor: selectedFactor, category: d.category });
-      })
-      .on('mouseout', function() {
-        d3.select(this).attr('opacity', 1);
-      });
+      // Bars
+      g1.selectAll('.bar')
+        .data(groupedData)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => xScale1(d.category))
+        .attr('y', d => yScale1(d.avgScore))
+        .attr('width', xScale1.bandwidth())
+        .attr('height', d => heightGrouped - yScale1(d.avgScore))
+        .attr('fill', d => categoryColorScale(d.category))
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+          d3.select(this).attr('opacity', 0.7);
+          if (onCategorySelect) onCategorySelect({ factor: selectedFactor, category: d.category });
+        })
+        .on('mouseout', function() {
+          d3.select(this).attr('opacity', 1);
+        });
 
-    // Value labels
-    g1.selectAll('.value-label')
-      .data(groupedData)
-      .enter()
-      .append('text')
-      .attr('class', 'value-label')
-      .attr('x', d => xScale1(d.category) + xScale1.bandwidth() / 2)
-      .attr('y', d => yScale1(d.avgScore) - 5)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '12px')
-      .attr('font-weight', 'bold')
-      .text(d => d.avgScore.toFixed(1));
+      // Value labels
+      g1.selectAll('.value-label')
+        .data(groupedData)
+        .enter()
+        .append('text')
+        .attr('class', 'value-label')
+        .attr('x', d => xScale1(d.category) + xScale1.bandwidth() / 2)
+        .attr('y', d => yScale1(d.avgScore) - 5)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '12px')
+        .attr('font-weight', 'bold')
+        .text(d => d.avgScore.toFixed(1));
 
-    // Axes
-    g1.append('g')
-      .attr('transform', `translate(0,${heightGrouped})`)
-      .call(d3.axisBottom(xScale1));
+      // Axes
+      g1.append('g')
+        .attr('transform', `translate(0,${heightGrouped})`)
+        .call(d3.axisBottom(xScale1));
 
-    g1.append('g')
-      .call(d3.axisLeft(yScale1));
+      g1.append('g')
+        .call(d3.axisLeft(yScale1));
 
-    g1.append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 0 - margin.left)
-      .attr('x', 0 - (heightGrouped / 2))
-      .attr('dy', '1em')
-      .style('text-anchor', 'middle')
-      .text('Average Exam Score');
+      g1.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 0 - margin.left)
+        .attr('x', 0 - (heightGrouped / 2))
+        .attr('dy', '1em')
+        .style('text-anchor', 'middle')
+        .text('Average Exam Score');
 
-    svg1.append('text')
-      .attr('x', containerWidth / 2)
-      .attr('y', 20)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '16px')
-      .attr('font-weight', 'bold')
-      .text(`Average Exam Score by ${selectedFactor.replace(/_/g, ' ')}`);
+      svg1.append('text')
+        .attr('x', containerWidth / 2)
+        .attr('y', 20)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '16px')
+        .attr('font-weight', 'bold')
+        .text(`Average Exam Score by ${selectedFactor.replace(/_/g, ' ')}`);
+    }
 
     // Create legend outside SVG for grouped view
     if (groupedLegendRef.current) {
