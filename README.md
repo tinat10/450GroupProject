@@ -75,5 +75,5 @@ src/
 
 ## Data
 
-The dashboard uses `StudentPerformanceFactors.csv` which contains 6,607 student records with 19 factors and exam scores.
+The dashboard uses `StudentPerformanceFactors.csv` which contains 6,378 student records with 19 factors and exam scores.
 
