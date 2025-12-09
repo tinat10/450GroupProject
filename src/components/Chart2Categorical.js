@@ -70,7 +70,7 @@ class Chart2Categorical extends Component {
         .style("color", "#fff")
         .style("padding", "10px 14px")
         .style("border-radius", "6px")
-        .style("font-size", "15px")
+        .style("font-size", "13px")
         .style("pointer-events", "none")
         .style("z-index", "1000")
         .style("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.3)");
@@ -154,7 +154,7 @@ class Chart2Categorical extends Component {
         return parseFloat(percentage) > 3 ? `${percentage}%` : "";
       })
       .attr("text-anchor", "middle")
-      .attr("font-size", "14px")
+      .attr("font-size", "12px")
       .attr("font-weight", "600")
       .attr("fill", "#fff")
       .style("text-shadow", "2px 2px 4px rgba(0,0,0,0.8)");
@@ -165,7 +165,7 @@ class Chart2Categorical extends Component {
       .attr("x", containerWidth / 2)
       .attr("y", 20)
       .attr("text-anchor", "middle")
-      .attr("font-size", "18px")
+      .attr("font-size", "16px")
       .attr("font-weight", "bold")
       .text(title);
   }
@@ -238,7 +238,7 @@ class Chart2Categorical extends Component {
         .attr("x", legendWidth / 2)
         .attr("y", 25)
         .attr("text-anchor", "middle")
-        .attr("font-size", "16px")
+        .attr("font-size", "14px")
         .attr("font-weight", "600")
         .attr("fill", "#2d3748")
         .text(`${factorDisplayName} Categories`);
@@ -285,7 +285,7 @@ class Chart2Categorical extends Component {
           .attr("x", 40)
           .attr("y", itemHeight / 2)
           .attr("dy", "0.35em")
-          .attr("font-size", "15px")
+          .attr("font-size", "13px")
           .attr("font-weight", "500")
           .attr("fill", "#2d3748")
           .text(category);
@@ -296,10 +296,10 @@ class Chart2Categorical extends Component {
   render() {
     const { selectedFactor } = this.state;
 
-  return (
-    <div>
+    return (
+      <div>
         <div
-          style={{ 
+          style={{
             marginBottom: "15px",
             display: "flex",
             justifyContent: "center",
@@ -322,7 +322,7 @@ class Chart2Categorical extends Component {
         </div>
         <div style={{ marginBottom: "20px" }}>
           <div
-          style={{ 
+            style={{
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
               gap: "20px",
@@ -331,10 +331,10 @@ class Chart2Categorical extends Component {
             <div id="pie-high"></div>
             <div id="pie-medium"></div>
             <div id="pie-low"></div>
-      </div>
-      </div>
+          </div>
+        </div>
         <div
-          style={{ 
+          style={{
             display: "flex",
             justifyContent: "center",
             marginTop: "20px",
@@ -343,14 +343,14 @@ class Chart2Categorical extends Component {
         >
           <div
             id="legend-container"
-          style={{ 
+            style={{
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
               borderRadius: "8px",
-          }}
-        ></div>
+            }}
+          ></div>
+        </div>
       </div>
-    </div>
-  );
+    );
   }
 }
 

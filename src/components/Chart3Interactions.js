@@ -126,7 +126,7 @@ class Chart3Interactions extends Component {
           .attr("x", xScale(d.category) + xScale.bandwidth() / 2)
           .attr("y", yScale(d.avgScore) - 5)
           .attr("text-anchor", "middle")
-          .attr("font-size", "14px")
+          .attr("font-size", "12px")
           .attr("font-weight", "600")
           .attr("fill", "#2d3748")
           .text(d.avgScore.toFixed(1));
@@ -138,13 +138,13 @@ class Chart3Interactions extends Component {
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(xScale))
       .selectAll("text")
-      .attr("font-size", "14px")
+      .attr("font-size", "12px")
       .attr("font-weight", "500");
 
     g.append("g")
       .call(d3.axisLeft(yScale))
       .selectAll("text")
-      .attr("font-size", "13px");
+      .attr("font-size", "11px");
 
     // Axis labels
     g.append("text")
@@ -153,7 +153,7 @@ class Chart3Interactions extends Component {
       .attr("x", 0 - height / 2)
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .attr("font-size", "16px")
+      .attr("font-size", "14px")
       .attr("font-weight", "500")
       .text("Average Exam Score");
 
@@ -163,7 +163,7 @@ class Chart3Interactions extends Component {
         `translate(${width / 2}, ${height + this.margin.bottom - 10})`
       )
       .style("text-anchor", "middle")
-      .attr("font-size", "16px")
+      .attr("font-size", "14px")
       .attr("font-weight", "500")
       .text(`${factorName} Category`);
 
@@ -173,7 +173,7 @@ class Chart3Interactions extends Component {
       .attr("x", containerWidth / 2)
       .attr("y", 25)
       .attr("text-anchor", "middle")
-      .attr("font-size", "18px")
+      .attr("font-size", "16px")
       .attr("font-weight", "bold")
       .text(`${factorName} vs Exam Score`);
   }
