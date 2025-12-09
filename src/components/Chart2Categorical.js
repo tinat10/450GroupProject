@@ -40,9 +40,9 @@ class Chart2Categorical extends Component {
     d3.select(container).selectAll("*").remove();
 
     const containerWidth = container.offsetWidth;
-    const containerHeight = 300;
+    const containerHeight = 350;
     const size = Math.min(containerWidth, containerHeight);
-    const radius = size / 2 - 60;
+    const radius = size / 2 - 30;
     const centerX = containerWidth / 2;
     const centerY = containerHeight / 2;
 
@@ -154,7 +154,7 @@ class Chart2Categorical extends Component {
         return parseFloat(percentage) > 3 ? `${percentage}%` : "";
       })
       .attr("text-anchor", "middle")
-      .attr("font-size", "12px")
+      .attr("font-size", "14px")
       .attr("font-weight", "600")
       .attr("fill", "#fff")
       .style("text-shadow", "2px 2px 4px rgba(0,0,0,0.8)");

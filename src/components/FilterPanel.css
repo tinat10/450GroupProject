@@ -28,18 +28,12 @@
   gap: 20px;
   margin-bottom: 20px;
   align-items: end;
-  justify-items: center;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 100%;
-  max-width: 250px;
 }
 
 .filter-group > label:first-child {
