@@ -5,3 +5,31 @@
   color: #666;
 }
 
+.chart-header-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  padding: 15px 30px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.chart-header-box .chart-title {
+  font-size: 1.3em;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: white !important;
+}
+
+.chart-header-box .chart-subtitle {
+  font-size: 0.95em;
+  color: white !important;
+  opacity: 0.95;
+  line-height: 1.4;
+  margin: 0;
+}
+

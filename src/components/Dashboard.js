@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { loadData } from '../utils/dataLoader';
 import { applyFilters } from '../utils/dataProcessor';
 import FilterPanel from './FilterPanel';
@@ -9,133 +9,161 @@ import Chart4Impact from './Chart4Impact';
 import SummaryPanel from './SummaryPanel';
 import './Dashboard.css';
 
-const Dashboard = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [filters, setFilters] = useState({
-    schoolType: 'All',
-    gender: 'All',
-    learningDisabilities: false,
-    scoreRange: [55, 101]
-  });
-  const [loading, setLoading] = useState(true);
-  const [selectedFactor, setSelectedFactor] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const loadedData = await loadData();
-        setData(loadedData);
-        setFilteredData(loadedData);
-      } catch (error) {
-        console.error('Error loading data:', error);
-      } finally {
-        setLoading(false);
-      }
+class Dashboard extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      filteredData: [],
+      filters: {
+        schoolType: 'All',
+        gender: 'All',
+        learningDisabilities: false,
+        scoreRange: [55, 101]
+      },
+      loading: true,
+      selectedFactor: null,
+      selectedCategory: null
     };
+  }
 
-    fetchData();
-  }, []);
+  componentDidMount() {
+    this.fetchData();
+  }
 
-  useEffect(() => {
-    if (data.length > 0) {
-      const filtered = applyFilters(data, filters);
-      setFilteredData(filtered);
+  componentDidUpdate(prevProps, prevState) {
+    // Apply filters when data changes (but not when filters change, handled in handleFilterChange)
+    if (prevState.data !== this.state.data && this.state.data.length > 0) {
+      const filtered = applyFilters(this.state.data, this.state.filters);
+      this.setState({ filteredData: filtered });
     }
-  }, [data, filters]);
+  }
 
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-  };
+  fetchData = async () => {
+    try {
+      this.setState({ loading: true });
+      const loadedData = await loadData();
+      const filtered = applyFilters(loadedData, this.state.filters);
+      this.setState({ 
+        data: loadedData,
+        filteredData: filtered,
+        loading: false 
+      });
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this.setState({ loading: false });
+    }
+  }
 
-  const handleFactorSelect = (factor) => {
-    setSelectedFactor(factor);
-  };
+  handleFilterChange = (newFilters) => {
+    this.setState({ filters: newFilters }, () => {
+      // Apply filters after state update
+      if (this.state.data.length > 0) {
+        const filtered = applyFilters(this.state.data, newFilters);
+        this.setState({ filteredData: filtered });
+      }
+    });
+  }
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-  };
+  handleFactorSelect = (factor) => {
+    this.setState({ selectedFactor: factor });
+  }
 
-  const handleCombinationSelect = (combination) => {
+  handleCategorySelect = (category) => {
+    this.setState({ selectedCategory: category });
+  }
+
+  handleCombinationSelect = (combination) => {
     // Could filter data based on combination
     console.log('Selected combination:', combination);
-  };
+  }
 
-  if (loading) {
+  render() {
+    const { loading, filteredData, filters, selectedFactor, selectedCategory } = this.state;
+
+    if (loading) {
+      return (
+        <div className="dashboard-container">
+          <div className="loading">Loading data...</div>
+        </div>
+      );
+    }
+
     return (
       <div className="dashboard-container">
-        <div className="loading">Loading data...</div>
+        <div className="dashboard-header">
+          <h1>Student Performance Factors Analysis</h1>
+          <p>Exploring What Drives Academic Success</p>
+        </div>
+
+        <FilterPanel 
+          filters={filters} 
+          onFilterChange={this.handleFilterChange}
+          data={filteredData}
+        />
+
+        <div style={{ marginBottom: '40px' }}>
+          <SummaryPanel data={filteredData} />
+        </div>
+
+        <div className="charts-grid">
+          <div className="chart-container">
+            <div className="chart-header-box">
+              <div className="chart-title">Chart 1: Correlation Analysis</div>
+              <div className="chart-subtitle">
+                Which factors have the strongest relationships with exam performance?
+              </div>
+            </div>
+            <Chart1Correlation 
+              data={filteredData}
+              selectedFactor={selectedFactor}
+              onFactorSelect={this.handleFactorSelect}
+            />
+          </div>
+
+          <div className="chart-container">
+            <div className="chart-header-box">
+              <div className="chart-title">Chart 2: Performance Across Categories</div>
+              <div className="chart-subtitle">
+                How do different student backgrounds and resources affect performance?
+              </div>
+            </div>
+            <Chart2Categorical 
+              data={filteredData}
+              selectedCategory={selectedCategory}
+              onCategorySelect={this.handleCategorySelect}
+            />
+          </div>
+
+          <div className="chart-container">
+            <div className="chart-header-box">
+              <div className="chart-title">Chart 3: Factor Interactions</div>
+              <div className="chart-subtitle">
+                How do combinations of factors create different performance profiles?
+              </div>
+            </div>
+            <Chart3Interactions 
+              data={filteredData}
+              onCombinationSelect={this.handleCombinationSelect}
+            />
+          </div>
+
+          <div className="chart-container">
+            <div className="chart-header-box">
+              <div className="chart-title">Chart 4: Impact Ranking</div>
+              <div className="chart-subtitle">
+                What are the most impactful factors?
+              </div>
+            </div>
+            <Chart4Impact 
+              data={filteredData}
+              onFactorSelect={this.handleFactorSelect}
+            />
+          </div>
+        </div>
       </div>
     );
   }
-
-  return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1>Student Performance Factors Analysis</h1>
-        <p>Exploring What Drives Academic Success</p>
-      </div>
-
-      <FilterPanel 
-        filters={filters} 
-        onFilterChange={handleFilterChange}
-        data={filteredData}
-      />
-
-      <div className="charts-grid">
-        <div className="chart-container">
-          <div className="chart-title">Chart 1: Correlation Analysis</div>
-          <div className="chart-subtitle">
-            Which factors have the strongest relationships with exam performance?
-          </div>
-          <Chart1Correlation 
-            data={filteredData}
-            selectedFactor={selectedFactor}
-            onFactorSelect={handleFactorSelect}
-          />
-        </div>
-
-        <div className="chart-container">
-          <div className="chart-title">Chart 2: Performance Across Categories</div>
-          <div className="chart-subtitle">
-            How do different student backgrounds and resources affect performance?
-          </div>
-          <Chart2Categorical 
-            data={filteredData}
-            selectedCategory={selectedCategory}
-            onCategorySelect={handleCategorySelect}
-          />
-        </div>
-
-        <div className="chart-container">
-          <div className="chart-title">Chart 3: Factor Interactions</div>
-          <div className="chart-subtitle">
-            How do combinations of factors create different performance profiles?
-          </div>
-          <Chart3Interactions 
-            data={filteredData}
-            onCombinationSelect={handleCombinationSelect}
-          />
-        </div>
-
-        <div className="chart-container">
-          <div className="chart-title">Chart 4: Impact Ranking</div>
-          <div className="chart-subtitle">
-            What are the most impactful factors?
-          </div>
-          <Chart4Impact 
-            data={filteredData}
-            onFactorSelect={handleFactorSelect}
-          />
-        </div>
-      </div>
-
-      <SummaryPanel data={filteredData} />
-    </div>
-  );
-};
+}
 
 export default Dashboard;
-

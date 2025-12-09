@@ -51,7 +51,30 @@ class Chart2Categorical extends Component {
       .select(container)
       .append("svg")
       .attr("width", containerWidth)
-      .attr("height", containerHeight);
+      .attr("height", containerHeight)
+      .on("mouseleave", () => {
+        // Hide tooltip when mouse leaves the entire chart area
+        d3.select("body").select(".pie-tooltip").style("opacity", 0);
+      });
+
+    // Create or get existing tooltip (shared across all pie charts)
+    let tooltip = d3.select("body").select(".pie-tooltip");
+    if (tooltip.empty()) {
+      tooltip = d3
+        .select("body")
+        .append("div")
+        .attr("class", "pie-tooltip")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background", "rgba(0, 0, 0, 0.85)")
+        .style("color", "#fff")
+        .style("padding", "10px 14px")
+        .style("border-radius", "6px")
+        .style("font-size", "15px")
+        .style("pointer-events", "none")
+        .style("z-index", "1000")
+        .style("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.3)");
+    }
 
     // Create pie generator
     const pieGenerator = d3
@@ -68,6 +91,7 @@ class Chart2Categorical extends Component {
 
     // Generate arc data
     const arcData = pieGenerator(data);
+    const total = data.reduce((sum, d) => sum + d.count, 0);
 
     // Create group for pie chart
     const g = svg
@@ -87,6 +111,19 @@ class Chart2Categorical extends Component {
         d3.select(event.currentTarget)
           .attr("opacity", 0.8)
           .attr("stroke-width", 4);
+
+        // Calculate percentage
+        const percentage = ((d.data.count / total) * 100).toFixed(1);
+
+        // Show tooltip
+        tooltip
+          .style("opacity", 1)
+          .html(
+            `<div style="font-weight: 600; margin-bottom: 4px;">${d.data.category}</div>` +
+              `<div>Students: <strong>${d.data.count}</strong></div>` +
+              `<div>Percentage: <strong>${percentage}%</strong></div>`
+          );
+
         if (this.props.onCategorySelect) {
           this.props.onCategorySelect({
             factor: this.state.selectedFactor,
@@ -94,14 +131,19 @@ class Chart2Categorical extends Component {
           });
         }
       })
+      .on("mousemove", (event) => {
+        tooltip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 10 + "px");
+      })
       .on("mouseout", (event) => {
         d3.select(event.currentTarget)
           .attr("opacity", 1)
           .attr("stroke-width", 3);
+        tooltip.style("opacity", 0);
       });
 
     // Add percentage labels
-    const total = data.reduce((sum, d) => sum + d.count, 0);
     g.selectAll("text")
       .data(arcData)
       .join("text")
@@ -112,7 +154,7 @@ class Chart2Categorical extends Component {
         return parseFloat(percentage) > 3 ? `${percentage}%` : "";
       })
       .attr("text-anchor", "middle")
-      .attr("font-size", "12px")
+      .attr("font-size", "14px")
       .attr("font-weight", "600")
       .attr("fill", "#fff")
       .style("text-shadow", "2px 2px 4px rgba(0,0,0,0.8)");
@@ -123,7 +165,7 @@ class Chart2Categorical extends Component {
       .attr("x", containerWidth / 2)
       .attr("y", 20)
       .attr("text-anchor", "middle")
-      .attr("font-size", "16px")
+      .attr("font-size", "18px")
       .attr("font-weight", "bold")
       .text(title);
   }
@@ -189,16 +231,17 @@ class Chart2Categorical extends Component {
         .attr("stroke", "#e2e8f0")
         .attr("stroke-width", 2);
 
-      // Title
+      // Title - make it clear what factor these categories belong to
+      const factorDisplayName = selectedFactor.replace(/_/g, " ");
       legendSvg
         .append("text")
         .attr("x", legendWidth / 2)
         .attr("y", 25)
         .attr("text-anchor", "middle")
-        .attr("font-size", "14px")
+        .attr("font-size", "16px")
         .attr("font-weight", "600")
         .attr("fill", "#2d3748")
-        .text("Categories");
+        .text(`${factorDisplayName} Categories`);
 
       const legend = legendSvg
         .append("g")
@@ -242,7 +285,7 @@ class Chart2Categorical extends Component {
           .attr("x", 40)
           .attr("y", itemHeight / 2)
           .attr("dy", "0.35em")
-          .attr("font-size", "13px")
+          .attr("font-size", "15px")
           .attr("font-weight", "500")
           .attr("fill", "#2d3748")
           .text(category);
@@ -253,21 +296,22 @@ class Chart2Categorical extends Component {
   render() {
     const { selectedFactor } = this.state;
 
-    return (
-      <div>
+  return (
+    <div>
         <div
-          style={{
+          style={{ 
             marginBottom: "15px",
             display: "flex",
-            gap: "10px",
+            justifyContent: "center",
             alignItems: "center",
+            gap: "10px",
           }}
         >
           <label style={{ marginRight: "10px" }}>Factor:</label>
           <select
             value={selectedFactor}
             onChange={(e) => this.setState({ selectedFactor: e.target.value })}
-            style={{ padding: "5px", marginRight: "20px" }}
+            style={{ padding: "5px" }}
           >
             {this.factors.map((f) => (
               <option key={f.key} value={f.key}>
@@ -278,7 +322,7 @@ class Chart2Categorical extends Component {
         </div>
         <div style={{ marginBottom: "20px" }}>
           <div
-            style={{
+          style={{ 
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
               gap: "20px",
@@ -287,10 +331,10 @@ class Chart2Categorical extends Component {
             <div id="pie-high"></div>
             <div id="pie-medium"></div>
             <div id="pie-low"></div>
-          </div>
-        </div>
+      </div>
+      </div>
         <div
-          style={{
+          style={{ 
             display: "flex",
             justifyContent: "center",
             marginTop: "20px",
@@ -299,14 +343,14 @@ class Chart2Categorical extends Component {
         >
           <div
             id="legend-container"
-            style={{
+          style={{ 
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
               borderRadius: "8px",
-            }}
-          ></div>
-        </div>
+          }}
+        ></div>
       </div>
-    );
+    </div>
+  );
   }
 }
 

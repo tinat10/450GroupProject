@@ -1,18 +1,33 @@
-import React, { useEffect, useRef } from 'react';
+import React, { Component } from 'react';
 import * as d3 from 'd3';
 import { calculateImpactScores } from '../utils/dataProcessor';
 import { impactColorScale } from '../utils/colorScales';
 
-const Chart4Impact = ({ data, onFactorSelect }) => {
-  const chartRef = useRef(null);
-  const legendRef = useRef(null);
-  const margin = { top: 50, right: 40, bottom: 70, left: 200 };
+class Chart4Impact extends Component {
+  constructor(props) {
+    super(props);
+    this.margin = { top: 50, right: 40, bottom: 70, left: 200 };
+  }
 
-  useEffect(() => {
-    if (!data || data.length === 0 || !chartRef.current) return;
+  componentDidMount() {
+    this.drawChart();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data) {
+      this.drawChart();
+    }
+  }
+
+  drawChart() {
+    const { data, onFactorSelect } = this.props;
+    const container = document.getElementById('chart4-container');
+    const legendContainer = document.getElementById('chart4-legend-container');
+    
+    if (!data || data.length === 0 || !container) return;
 
     // Clear previous
-    d3.select(chartRef.current).selectAll('*').remove();
+    d3.select(container).selectAll('*').remove();
 
     const allFactors = [
       'Hours_Studied',
@@ -31,18 +46,18 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
 
     const impacts = calculateImpactScores(data, allFactors);
 
-    const containerWidth = chartRef.current.offsetWidth;
+    const containerWidth = container.offsetWidth;
     const containerHeight = Math.max(400, impacts.length * 35);
-    const width = containerWidth - margin.left - margin.right;
-    const height = containerHeight - margin.top - margin.bottom;
+    const width = containerWidth - this.margin.left - this.margin.right;
+    const height = containerHeight - this.margin.top - this.margin.bottom;
 
-    const svg = d3.select(chartRef.current)
+    const svg = d3.select(container)
       .append('svg')
       .attr('width', containerWidth)
       .attr('height', containerHeight);
 
     const g = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
     // Scales
     const maxImpact = d3.max(impacts.map(d => Math.abs(d.impact)));
@@ -95,7 +110,7 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       .attr('y', d => yScale(d.factor) + yScale.bandwidth() / 2)
       .attr('dy', '0.35em')
       .attr('text-anchor', d => d.impact >= 0 ? 'start' : 'end')
-      .attr('font-size', '11px')
+      .attr('font-size', '13px')
       .attr('font-weight', 'bold')
       .attr('fill', '#333')
       .text(d => d.impact.toFixed(2));
@@ -106,18 +121,20 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       .attr('y', d => yScale(d.factor) + yScale.bandwidth() / 2)
       .attr('dy', '0.35em')
       .attr('text-anchor', 'end')
-      .attr('font-size', '12px')
+      .attr('font-size', '14px')
       .text(d => d.factor.replace(/_/g, ' '));
 
     // X-axis
     g.append('g')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(xScale).tickFormat(d => d.toFixed(1)));
+      .call(d3.axisBottom(xScale).tickFormat(d => d.toFixed(1)))
+      .selectAll('text')
+      .attr('font-size', '13px');
 
     g.append('text')
-      .attr('transform', `translate(${width / 2}, ${height + margin.bottom - 20})`)
+      .attr('transform', `translate(${width / 2}, ${height + this.margin.bottom - 20})`)
       .style('text-anchor', 'middle')
-      .attr('font-size', '14px')
+      .attr('font-size', '16px')
       .text('Impact Score (Top 25% vs Bottom 25%)');
 
     // Title
@@ -125,20 +142,20 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
       .attr('x', containerWidth / 2)
       .attr('y', 25)
       .attr('text-anchor', 'middle')
-      .attr('font-size', '16px')
+      .attr('font-size', '18px')
       .attr('font-weight', 'bold')
       .text('Factor Impact Ranking');
 
     // Create legend outside SVG with improved styling
-    if (legendRef.current) {
-      d3.select(legendRef.current).selectAll('*').remove();
+    if (legendContainer) {
+      d3.select(legendContainer).selectAll('*').remove();
       const padding = 20;
-      const itemHeight = 32;
-      const itemSpacing = 10;
-      const legendWidth = 420; // Increased width to accommodate descriptions
+      const itemHeight = 28;
+      const itemSpacing = 8;
+      const legendWidth = 300;
       const legendHeight = 2 * (itemHeight + itemSpacing) + padding * 2 + 30;
       
-      const legendSvg = d3.select(legendRef.current)
+      const legendSvg = d3.select(legendContainer)
         .append('svg')
         .attr('width', legendWidth)
         .attr('height', legendHeight);
@@ -160,7 +177,7 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
         .attr('x', legendWidth / 2)
         .attr('y', 25)
         .attr('text-anchor', 'middle')
-        .attr('font-size', '14px')
+        .attr('font-size', '16px')
         .attr('font-weight', '600')
         .attr('fill', '#2d3748')
         .text('Impact Direction');
@@ -193,9 +210,9 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
         // Color square
         legendItem.append('rect')
           .attr('x', 12)
-          .attr('y', 7)
-          .attr('width', 20)
-          .attr('height', 20)
+          .attr('y', 6.5)
+          .attr('width', 18)
+          .attr('height', 18)
           .attr('rx', 3)
           .attr('ry', 3)
           .attr('fill', type.color)
@@ -204,47 +221,38 @@ const Chart4Impact = ({ data, onFactorSelect }) => {
 
         // Label text
         legendItem.append('text')
-          .attr('x', 42)
-          .attr('y', 20)
+          .attr('x', 40)
+          .attr('y', itemHeight / 2)
           .attr('dy', '0.35em')
-          .attr('font-size', '13px')
-          .attr('font-weight', '600')
+          .attr('font-size', '15px')
+          .attr('font-weight', '500')
           .attr('fill', '#2d3748')
           .text(type.label);
-
-        // Description text - positioned with enough space
-        legendItem.append('text')
-          .attr('x', 170)
-          .attr('y', 20)
-          .attr('dy', '0.35em')
-          .attr('font-size', '11px')
-          .attr('fill', '#718096')
-          .text(type.description);
       });
     }
+  }
 
-  }, [data, onFactorSelect]);
-
-  return (
-    <div>
-      <div ref={chartRef}></div>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        marginTop: '20px',
-        padding: '0 20px'
-      }}>
-        <div 
-          ref={legendRef} 
-          style={{ 
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-            borderRadius: '8px'
-          }}
-        ></div>
+  render() {
+    return (
+      <div>
+        <div id="chart4-container"></div>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          marginTop: '20px',
+          padding: '0 20px'
+        }}>
+          <div 
+            id="chart4-legend-container"
+            style={{ 
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              borderRadius: '8px'
+            }}
+          ></div>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 export default Chart4Impact;
-
