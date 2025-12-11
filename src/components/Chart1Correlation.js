@@ -62,11 +62,10 @@ class Chart1Correlation extends Component {
       .nice()
       .range([0, width]);
 
-    const scores = binnedData.map((b) => b.avgScore);
+    // Keep the y-axis fixed between 0 and 100 so it doesn't rescale dynamically
     const yScale = d3
       .scaleLinear()
-      .domain(d3.extent(scores))
-      .nice()
+      .domain([60, 76])
       .range([height, 0]);
 
     // Line generator
