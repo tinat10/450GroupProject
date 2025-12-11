@@ -97,7 +97,7 @@ class Chart3Interactions extends Component {
     const allScores = categoryData.map((d) => d.avgScore);
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(allScores) * 1.1])
+      .domain([d3.min(allScores) * .97 , d3.max(allScores) * 1.01])
       .nice()
       .range([height, 0]);
 
