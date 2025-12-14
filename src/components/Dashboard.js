@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { loadData } from '../utils/dataLoader';
-import { applyFilters } from '../utils/dataProcessor';
-import FilterPanel from './FilterPanel';
-import Chart1Correlation from './Chart1Correlation';
-import Chart2Categorical from './Chart2Categorical';
-import Chart3Interactions from './Chart3Interactions';
-import Chart4Impact from './Chart4Impact';
-import SummaryPanel from './SummaryPanel';
-import './Dashboard.css';
+import React, { Component } from "react";
+import { loadData } from "../utils/dataLoader";
+import { applyFilters } from "../utils/dataProcessor";
+import FilterPanel from "./FilterPanel";
+import Chart1Correlation from "./Chart1Correlation";
+import Chart2Categorical from "./Chart2Categorical";
+import Chart3Interactions from "./Chart3Interactions";
+import Chart4Impact from "./Chart4Impact";
+import SummaryPanel from "./SummaryPanel";
+import "./Dashboard.css";
 
 class Dashboard extends Component {
   constructor(props) {
@@ -16,14 +16,14 @@ class Dashboard extends Component {
       data: [],
       filteredData: [],
       filters: {
-        schoolType: 'All',
-        gender: 'All',
+        schoolType: "All",
+        gender: "All",
         learningDisabilities: false,
-        scoreRange: [55, 101]
+        scoreRange: [55, 101],
       },
       loading: true,
       selectedFactor: null,
-      selectedCategory: null
+      selectedCategory: null,
     };
   }
 
@@ -44,16 +44,16 @@ class Dashboard extends Component {
       this.setState({ loading: true });
       const loadedData = await loadData();
       const filtered = applyFilters(loadedData, this.state.filters);
-      this.setState({ 
+      this.setState({
         data: loadedData,
         filteredData: filtered,
-        loading: false 
+        loading: false,
       });
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error("Error loading data:", error);
       this.setState({ loading: false });
     }
-  }
+  };
 
   handleFilterChange = (newFilters) => {
     this.setState({ filters: newFilters }, () => {
@@ -63,23 +63,24 @@ class Dashboard extends Component {
         this.setState({ filteredData: filtered });
       }
     });
-  }
+  };
 
   handleFactorSelect = (factor) => {
     this.setState({ selectedFactor: factor });
-  }
+  };
 
   handleCategorySelect = (category) => {
     this.setState({ selectedCategory: category });
-  }
+  };
 
   handleCombinationSelect = (combination) => {
     // Could filter data based on combination
-    console.log('Selected combination:', combination);
-  }
+    console.log("Selected combination:", combination);
+  };
 
   render() {
-    const { loading, filteredData, filters, selectedFactor, selectedCategory } = this.state;
+    const { loading, filteredData, filters, selectedFactor, selectedCategory } =
+      this.state;
 
     if (loading) {
       return (
@@ -96,13 +97,13 @@ class Dashboard extends Component {
           <p>Exploring What Drives Academic Success</p>
         </div>
 
-        <FilterPanel 
-          filters={filters} 
+        <FilterPanel
+          filters={filters}
           onFilterChange={this.handleFilterChange}
           data={filteredData}
         />
 
-        <div style={{ marginBottom: '40px' }}>
+        <div style={{ marginBottom: "40px" }}>
           <SummaryPanel data={filteredData} />
         </div>
 
@@ -111,10 +112,11 @@ class Dashboard extends Component {
             <div className="chart-header-box">
               <div className="chart-title">Chart 1: Correlation Analysis</div>
               <div className="chart-subtitle">
-                Which factors have the strongest relationships with exam performance?
+                Which factors have the strongest relationships with exam
+                performance?
               </div>
             </div>
-            <Chart1Correlation 
+            <Chart1Correlation
               data={filteredData}
               selectedFactor={selectedFactor}
               onFactorSelect={this.handleFactorSelect}
@@ -123,13 +125,17 @@ class Dashboard extends Component {
 
           <div className="chart-container">
             <div className="chart-header-box">
-              <div className="chart-title">Chart 2: Performance Across Categories</div>
+              <div className="chart-title">
+                Chart 2: Performance Across Categories
+              </div>
               <div className="chart-subtitle">
-                How do different student backgrounds and resources affect performance?
+                How do different student backgrounds and resources affect
+                performance?
               </div>
             </div>
-            <Chart2Categorical 
+            <Chart2Categorical
               data={filteredData}
+              filters={filters}
               selectedCategory={selectedCategory}
               onCategorySelect={this.handleCategorySelect}
             />
@@ -139,10 +145,11 @@ class Dashboard extends Component {
             <div className="chart-header-box">
               <div className="chart-title">Chart 3: Factor Interactions</div>
               <div className="chart-subtitle">
-                How do combinations of factors create different performance profiles?
+                How do combinations of factors create different performance
+                profiles?
               </div>
             </div>
-            <Chart3Interactions 
+            <Chart3Interactions
               data={filteredData}
               onCombinationSelect={this.handleCombinationSelect}
             />
@@ -155,7 +162,7 @@ class Dashboard extends Component {
                 What are the most impactful factors?
               </div>
             </div>
-            <Chart4Impact 
+            <Chart4Impact
               data={filteredData}
               onFactorSelect={this.handleFactorSelect}
             />

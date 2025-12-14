@@ -187,17 +187,39 @@ class Chart2Categorical extends Component {
     const mediumData = this.groupByCategory(mediumScores, selectedFactor);
     const lowData = this.groupByCategory(lowScores, selectedFactor);
 
-    // Create the three pie charts
-    this.createPieChart("pie-high", highData, "High Scores (≥75)");
-    this.createPieChart("pie-medium", mediumData, "Medium Scores (65-74)");
-    this.createPieChart("pie-low", lowData, "Low Scores (<65)");
+    // Helper function to clear container
+    const clearContainer = (containerId) => {
+      const container = document.getElementById(containerId);
+      if (container) {
+        d3.select(container).selectAll("*").remove();
+      }
+    };
 
-    // Get all unique categories for legend
+    // Only render pie charts if they have data
+    if (highData.length > 0) {
+      this.createPieChart("pie-high", highData, "High Scores (≥75)");
+    } else {
+      clearContainer("pie-high");
+    }
+
+    if (mediumData.length > 0) {
+      this.createPieChart("pie-medium", mediumData, "Medium Scores (65-74)");
+    } else {
+      clearContainer("pie-medium");
+    }
+
+    if (lowData.length > 0) {
+      this.createPieChart("pie-low", lowData, "Low Scores (<65)");
+    } else {
+      clearContainer("pie-low");
+    }
+
+    // Get all unique categories for legend (only from charts that have data)
     const allCategories = [
       ...new Set([
-        ...highData.map((d) => d.category),
-        ...mediumData.map((d) => d.category),
-        ...lowData.map((d) => d.category),
+        ...(highData.length > 0 ? highData.map((d) => d.category) : []),
+        ...(mediumData.length > 0 ? mediumData.map((d) => d.category) : []),
+        ...(lowData.length > 0 ? lowData.map((d) => d.category) : []),
       ]),
     ].sort();
 
