@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { loadData } from "../utils/dataLoader";
 import { applyFilters } from "../utils/dataProcessor";
 import FilterPanel from "./FilterPanel";
-import Chart1Correlation from "./Chart1Correlation";
+import Chart1Academic from "./Chart1Academic";
 import Chart2Categorical from "./Chart2Categorical";
-import Chart3Interactions from "./Chart3Interactions";
+import Chart3Social from "./Chart3Social";
 import Chart4Impact from "./Chart4Impact";
 import SummaryPanel from "./SummaryPanel";
 import "./Dashboard.css";
@@ -115,7 +115,7 @@ class Dashboard extends Component {
                 How are key academic behaviors and habits associated with exam performance?
               </div>
             </div>
-            <Chart1Correlation
+            <Chart1Academic
               data={filteredData}
               selectedFactor={selectedFactor}
               onFactorSelect={this.handleFactorSelect}
@@ -146,7 +146,7 @@ class Dashboard extends Component {
                 How does exam performance differ across levels of social and environmental factors?
               </div>
             </div>
-            <Chart3Interactions
+            <Chart3Social
               data={filteredData}
               onCombinationSelect={this.handleCombinationSelect}
             />
