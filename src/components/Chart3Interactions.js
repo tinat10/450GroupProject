@@ -205,7 +205,7 @@ class Chart3Interactions extends Component {
       .attr("x", containerWidth / 2)
       .attr("y", 25)
       .attr("text-anchor", "middle")
-      .attr("font-size", "16px")
+      .attr("font-size", "18px")
       .attr("font-weight", "bold")
       .text(`${factorName} vs Exam Score`);
   }
@@ -307,19 +307,6 @@ class Chart3Interactions extends Component {
 
     return (
       <div>
-        <div style={{ marginBottom: "30px" }}>
-          <h2
-            style={{
-              textAlign: "center",
-              fontSize: "20px",
-              fontWeight: "bold",
-              marginBottom: "20px",
-              color: "#2d3748",
-            }}
-          >
-            How Do Social Factors Affect Overall Performance?
-          </h2>
-        </div>
         <div
           style={{
             marginBottom: "20px",
@@ -336,7 +323,7 @@ class Chart3Interactions extends Component {
               fontWeight: "500",
             }}
           >
-            Select Social Factor:
+            Select Factor:
           </label>
           <select
             id="social-factor-select"

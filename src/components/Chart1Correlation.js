@@ -203,7 +203,7 @@ class Chart1Correlation extends Component {
       .attr("text-anchor", "middle")
       .attr("font-size", "18px")
       .attr("font-weight", "bold")
-      .text(`Correlation: ${selectedFactor.replace(/_/g, " ")} vs Exam Score`);
+      .text(`${selectedFactor.replace(/_/g, " ")} vs Exam Score`);
   }
 
   render() {

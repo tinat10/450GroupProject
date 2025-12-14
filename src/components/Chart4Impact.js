@@ -146,7 +146,7 @@ class Chart4Impact extends Component {
       )
       .style("text-anchor", "middle")
       .attr("font-size", "14px")
-      .text("Impact Score (Top 25% vs Bottom 25%)");
+      .text("Impact Score (Top 25% - Bottom 25%)");
 
     // Title
     svg
@@ -154,7 +154,7 @@ class Chart4Impact extends Component {
       .attr("x", containerWidth / 2)
       .attr("y", 25)
       .attr("text-anchor", "middle")
-      .attr("font-size", "16px")
+      .attr("font-size", "18px")
       .attr("font-weight", "bold")
       .text("Factor Impact Ranking");
 

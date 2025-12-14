@@ -110,10 +110,9 @@ class Dashboard extends Component {
         <div className="charts-grid">
           <div className="chart-container">
             <div className="chart-header-box">
-              <div className="chart-title">Chart 1: Correlation Analysis</div>
+              <div className="chart-title">Chart 1: Academic Behaviors</div>
               <div className="chart-subtitle">
-                Which factors have the strongest relationships with exam
-                performance?
+                How are key academic behaviors and habits associated with exam performance?
               </div>
             </div>
             <Chart1Correlation
@@ -129,8 +128,7 @@ class Dashboard extends Component {
                 Chart 2: Performance Across Categories
               </div>
               <div className="chart-subtitle">
-                How do different student backgrounds and resources affect
-                performance?
+                How are student background and resource factors distributed across performance groups?
               </div>
             </div>
             <Chart2Categorical
@@ -143,10 +141,9 @@ class Dashboard extends Component {
 
           <div className="chart-container">
             <div className="chart-header-box">
-              <div className="chart-title">Chart 3: Factor Interactions</div>
+              <div className="chart-title">Chart 3: Social & Environmental Factors</div>
               <div className="chart-subtitle">
-                How do combinations of factors create different performance
-                profiles?
+                How does exam performance differ across levels of social and environmental factors?
               </div>
             </div>
             <Chart3Interactions
@@ -157,9 +154,9 @@ class Dashboard extends Component {
 
           <div className="chart-container">
             <div className="chart-header-box">
-              <div className="chart-title">Chart 4: Impact Ranking</div>
+              <div className="chart-title">Chart 4: Most Impactful Factors</div>
               <div className="chart-subtitle">
-                What are the most impactful factors?
+                Which factors show the strongest relationships with exam performance?
               </div>
             </div>
             <Chart4Impact
