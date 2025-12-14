@@ -197,7 +197,7 @@ class Chart3Interactions extends Component {
       .style("text-anchor", "middle")
       .attr("font-size", "14px")
       .attr("font-weight", "500")
-      .text(`${factorName} Category`);
+      .text(`${factorName}`);
 
     // Title
     svg
