@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
-import { categoryColorScale } from "../utils/colorScales";
 
 class Chart3Interactions extends Component {
   constructor(props) {
@@ -101,6 +100,21 @@ class Chart3Interactions extends Component {
       .nice()
       .range([height, 0]);
 
+    // Create tooltip
+    const tooltip = d3
+      .select(container)
+      .append("div")
+      .style("position", "absolute")
+      .style("background", "rgba(0, 0, 0, 0.8)")
+      .style("color", "#fff")
+      .style("padding", "8px 12px")
+      .style("border-radius", "6px")
+      .style("font-size", "12px")
+      .style("pointer-events", "none")
+      .style("opacity", 0)
+      .style("z-index", 1000)
+      .style("box-shadow", "0 2px 8px rgba(0,0,0,0.3)");
+
     // Draw bars
     categoryData.forEach((d) => {
       const bar = g
@@ -109,15 +123,33 @@ class Chart3Interactions extends Component {
         .attr("y", yScale(d.avgScore))
         .attr("width", xScale.bandwidth())
         .attr("height", height - yScale(d.avgScore))
-        .attr("fill", categoryColorScale(d.category))
+        .attr("fill", "#3b82f6")
         .attr("stroke", "#fff")
         .attr("stroke-width", 2)
         .style("cursor", "pointer")
-        .on("mouseover", function () {
+        .on("mouseover", function (event) {
           d3.select(this).attr("opacity", 0.8);
+
+          // Show tooltip with category information
+          const [x, y] = d3.pointer(event, container);
+          tooltip
+            .style("opacity", 1)
+            .style("left", x + 10 + "px")
+            .style("top", y - 10 + "px")
+            .html(
+              `<div style="font-weight: 600; margin-bottom: 4px;">${d.category}</div>` +
+                `<div>Average Score: ${d.avgScore.toFixed(1)}</div>` +
+                `<div style="margin-top: 4px; font-weight: 600;">Data Points: ${d.count}</div>`
+            );
+        })
+        .on("mousemove", function (event) {
+          // Update tooltip position as mouse moves
+          const [x, y] = d3.pointer(event, container);
+          tooltip.style("left", x + 10 + "px").style("top", y - 10 + "px");
         })
         .on("mouseout", function () {
           d3.select(this).attr("opacity", 1);
+          tooltip.style("opacity", 0);
         });
 
       // Value label on top of bar
@@ -330,7 +362,7 @@ class Chart3Interactions extends Component {
         <div style={{ width: "100%", minHeight: "400px" }}>
           <div
             id="social-chart-container"
-            style={{ width: "100%", height: "400px" }}
+            style={{ width: "100%", height: "400px", position: "relative" }}
           ></div>
         </div>
       </div>

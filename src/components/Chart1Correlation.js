@@ -9,20 +9,44 @@ class Chart1Correlation extends Component {
     this.factors = getNumericFactors();
     this.state = {
       selectedFactor: this.factors[0] || "",
+      fixedYDomain: null,
     };
     this.margin = { top: 40, right: 40, bottom: 60, left: 80 };
   }
 
   componentDidMount() {
+    this.calculateFixedYDomain();
     this.drawChart();
   }
 
   componentDidUpdate(prevProps, prevState) {
+    // Calculate fixed domain when data first arrives or changes
+    if (prevProps.data !== this.props.data) {
+      this.calculateFixedYDomain();
+    }
+
     if (
       prevProps.data !== this.props.data ||
       prevState.selectedFactor !== this.state.selectedFactor
     ) {
       this.drawChart();
+    }
+  }
+
+  calculateFixedYDomain() {
+    const { data } = this.props;
+    if (!data || data.length === 0) return;
+
+    // Calculate the full extent of Exam_Score from all data
+    const allScores = data
+      .map((d) => d.Exam_Score)
+      .filter(
+        (score) => !isNaN(score) && score !== null && score !== undefined
+      );
+
+    if (allScores.length > 0) {
+      const extent = d3.extent(allScores);
+      this.setState({ fixedYDomain: extent });
     }
   }
 
@@ -62,12 +86,11 @@ class Chart1Correlation extends Component {
       .nice()
       .range([0, width]);
 
+    // Use fixed y-axis domain if available, otherwise fall back to data extent
+    const { fixedYDomain } = this.state;
     const scores = binnedData.map((b) => b.avgScore);
-    const yScale = d3
-      .scaleLinear()
-      .domain(d3.extent(scores))
-      .nice()
-      .range([height, 0]);
+    const yDomain = fixedYDomain || d3.extent(scores);
+    const yScale = d3.scaleLinear().domain(yDomain).nice().range([height, 0]);
 
     // Line generator
     const line = d3
@@ -84,6 +107,21 @@ class Chart1Correlation extends Component {
       .attr("stroke-width", 3)
       .attr("d", line);
 
+    // Create tooltip
+    const tooltip = d3
+      .select(container)
+      .append("div")
+      .style("position", "absolute")
+      .style("background", "rgba(0, 0, 0, 0.8)")
+      .style("color", "#fff")
+      .style("padding", "8px 12px")
+      .style("border-radius", "6px")
+      .style("font-size", "12px")
+      .style("pointer-events", "none")
+      .style("opacity", 0)
+      .style("z-index", 1000)
+      .style("box-shadow", "0 2px 8px rgba(0,0,0,0.3)");
+
     // Add circles for data points
     g.selectAll(".point")
       .data(binnedData)
@@ -98,9 +136,30 @@ class Chart1Correlation extends Component {
       .attr("stroke-width", 2)
       .on("mouseover", function (event, d) {
         d3.select(this).attr("r", 7);
+
+        // Show tooltip with bin information
+        const [x, y] = d3.pointer(event, container);
+        tooltip
+          .style("opacity", 1)
+          .style("left", x + 10 + "px")
+          .style("top", y - 10 + "px")
+          .html(
+            `<div style="font-weight: 600; margin-bottom: 4px;">Bin Information</div>` +
+              `<div>Range: ${d.binStart.toFixed(1)} - ${d.binEnd.toFixed(
+                1
+              )}</div>` +
+              `<div>Average Score: ${d.avgScore.toFixed(1)}</div>` +
+              `<div style="margin-top: 4px; font-weight: 600;">Data Points: ${d.count}</div>`
+          );
+      })
+      .on("mousemove", function (event) {
+        // Update tooltip position as mouse moves
+        const [x, y] = d3.pointer(event, container);
+        tooltip.style("left", x + 10 + "px").style("top", y - 10 + "px");
       })
       .on("mouseout", function () {
         d3.select(this).attr("r", 5);
+        tooltip.style("opacity", 0);
       });
 
     // Axes
@@ -192,7 +251,7 @@ class Chart1Correlation extends Component {
           </select>
         </div>
         <div>
-          <div id="chart1-container"></div>
+          <div id="chart1-container" style={{ position: "relative" }}></div>
         </div>
       </div>
     );
