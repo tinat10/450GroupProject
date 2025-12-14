@@ -42,6 +42,10 @@ class Chart4Impact extends Component {
       "Teacher_Quality",
       "School_Type",
       "Motivation_Level",
+      "Distance_From_Home",
+      "Access_to_Resources",
+      "Peer_Influence",
+      "Gender"
     ];
 
     const impacts = calculateImpactScores(data, allFactors);
@@ -161,11 +165,13 @@ class Chart4Impact extends Component {
     // Create legend outside SVG with improved styling
     if (legendContainer) {
       d3.select(legendContainer).selectAll("*").remove();
+
       const padding = 20;
       const itemHeight = 28;
-      const itemSpacing = 8;
-      const legendWidth = 300;
-      const legendHeight = 2 * (itemHeight + itemSpacing) + padding * 2 + 30;
+      const itemSpacing = 16; // horizontal spacing
+      const itemWidth = 150;  // width per legend item
+      const legendWidth = padding * 2 + itemWidth * 2 + itemSpacing;
+      const legendHeight = padding * 2 + itemHeight + 30;
 
       const legendSvg = d3
         .select(legendContainer)
@@ -173,11 +179,9 @@ class Chart4Impact extends Component {
         .attr("width", legendWidth)
         .attr("height", legendHeight);
 
-      // Background rectangle with rounded corners
-      const bg = legendSvg
+      // Background rectangle
+      legendSvg
         .append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
         .attr("width", legendWidth)
         .attr("height", legendHeight)
         .attr("rx", 8)
@@ -202,36 +206,26 @@ class Chart4Impact extends Component {
         .attr("transform", `translate(${padding}, ${padding + 30})`);
 
       const impactTypes = [
-        {
-          label: "Positive Impact",
-          color: "#27ae60",
-          description: "Higher values improve performance",
-        },
-        {
-          label: "Negative Impact",
-          color: "#e74c3c",
-          description: "Higher values decrease performance",
-        },
+        { label: "Positive Impact", color: "#27ae60" },
+        { label: "Negative Impact", color: "#e74c3c" }
       ];
 
       impactTypes.forEach((type, i) => {
-        const yPos = i * (itemHeight + itemSpacing);
+        const xPos = i * (itemWidth + itemSpacing);
+
         const legendItem = legend
           .append("g")
-          .attr("transform", `translate(0, ${yPos})`);
+          .attr("transform", `translate(${xPos}, 0)`);
 
         // Item background
         legendItem
           .append("rect")
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("width", legendWidth - padding * 2)
+          .attr("width", itemWidth)
           .attr("height", itemHeight)
           .attr("rx", 4)
           .attr("ry", 4)
           .attr("fill", "white")
-          .attr("stroke", "#e2e8f0")
-          .attr("stroke-width", 1);
+          .attr("stroke", "#e2e8f0");
 
         // Color square
         legendItem
@@ -246,7 +240,7 @@ class Chart4Impact extends Component {
           .attr("stroke", "#fff")
           .attr("stroke-width", 2);
 
-        // Label text
+        // Label
         legendItem
           .append("text")
           .attr("x", 40)
@@ -258,6 +252,7 @@ class Chart4Impact extends Component {
           .text(type.label);
       });
     }
+
   }
 
   render() {
