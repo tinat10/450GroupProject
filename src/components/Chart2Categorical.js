@@ -227,12 +227,24 @@ class Chart2Categorical extends Component {
     const legendContainer = document.getElementById("legend-container");
     if (legendContainer) {
       d3.select(legendContainer).selectAll("*").remove();
+
       const padding = 20;
       const itemHeight = 28;
-      const itemSpacing = 8;
-      const legendWidth = 300;
+      const itemSpacingX = 16;
+      const itemSpacingY = 8;
+      const itemWidth = 100;
+
+      const columns = 3; // number of side-by-side columns
+      const rows = Math.ceil(allCategories.length / columns);
+
+      const legendWidth =
+        padding * 2 + columns * itemWidth + (columns - 1) * itemSpacingX;
+
       const legendHeight =
-        allCategories.length * (itemHeight + itemSpacing) + padding * 2 + 30;
+        padding * 2 +
+        rows * itemHeight +
+        (rows - 1) * itemSpacingY +
+        30;
 
       const legendSvg = d3
         .select(legendContainer)
@@ -240,11 +252,9 @@ class Chart2Categorical extends Component {
         .attr("width", legendWidth)
         .attr("height", legendHeight);
 
-      // Background rectangle with rounded corners
-      const bg = legendSvg
+      // Background rectangle
+      legendSvg
         .append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
         .attr("width", legendWidth)
         .attr("height", legendHeight)
         .attr("rx", 8)
@@ -253,7 +263,7 @@ class Chart2Categorical extends Component {
         .attr("stroke", "#e2e8f0")
         .attr("stroke-width", 2);
 
-      // Title - make it clear what factor these categories belong to
+      // Title
       const factorDisplayName = selectedFactor.replace(/_/g, " ");
       legendSvg
         .append("text")
@@ -270,23 +280,25 @@ class Chart2Categorical extends Component {
         .attr("transform", `translate(${padding}, ${padding + 30})`);
 
       allCategories.forEach((category, i) => {
-        const yPos = i * (itemHeight + itemSpacing);
+        const col = i % columns;
+        const row = Math.floor(i / columns);
+
+        const xPos = col * (itemWidth + itemSpacingX);
+        const yPos = row * (itemHeight + itemSpacingY);
+
         const legendItem = legend
           .append("g")
-          .attr("transform", `translate(0, ${yPos})`);
+          .attr("transform", `translate(${xPos}, ${yPos})`);
 
         // Item background
         legendItem
           .append("rect")
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("width", legendWidth - padding * 2)
+          .attr("width", itemWidth)
           .attr("height", itemHeight)
           .attr("rx", 4)
           .attr("ry", 4)
           .attr("fill", "white")
-          .attr("stroke", "#e2e8f0")
-          .attr("stroke-width", 1);
+          .attr("stroke", "#e2e8f0");
 
         // Color square
         legendItem
