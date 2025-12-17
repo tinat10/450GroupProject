@@ -2,7 +2,9 @@ import * as d3 from 'd3';
 
 export const loadData = async () => {
   try {
-    const data = await d3.csv('/StudentPerformanceFactors.csv');
+    // Use PUBLIC_URL so the CSV loads correctly on GitHub Pages under /450GroupProject
+    const dataUrl = `${process.env.PUBLIC_URL || ''}/StudentPerformanceFactors.csv`;
+    const data = await d3.csv(dataUrl);
     
     // Convert numeric columns
     const numericColumns = [
