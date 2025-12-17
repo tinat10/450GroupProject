@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting…</title>
+  <script>
+    (function() {
+      // Redirect GitHub Pages 404s back into the SPA so client routing works.
+      var path = window.location.pathname;
+      var parts = path.split('/').filter(Boolean);
+      var repo = parts.shift() || '';
+      var remainder = parts.join('/');
+      var newUrl = '/' + repo + '/#/' + remainder + window.location.search + window.location.hash;
+      window.location.replace(newUrl);
+    })();
+  </script>
+</head>
+<body>
+  Redirecting…
+</body>
+</html>
+

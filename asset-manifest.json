@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/450GroupProject/static/css/main.7c03aaf3.css",
+    "main.js": "/450GroupProject/static/js/main.981a3735.js",
+    "index.html": "/450GroupProject/index.html",
+    "main.7c03aaf3.css.map": "/450GroupProject/static/css/main.7c03aaf3.css.map",
+    "main.981a3735.js.map": "/450GroupProject/static/js/main.981a3735.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7c03aaf3.css",
+    "static/js/main.981a3735.js"
+  ]
+}
